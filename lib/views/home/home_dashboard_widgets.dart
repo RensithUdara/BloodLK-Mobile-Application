@@ -8,22 +8,18 @@ class DonorHomeHeader extends StatelessWidget {
     required this.name,
     required this.bloodGroup,
     required this.donorId,
-    required this.status,
-    required this.onStatusTap,
   });
 
   final String name;
   final String bloodGroup;
   final String donorId;
-  final String status;
-  final VoidCallback onStatusTap;
 
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return SizedBox(
-      height: compact ? 238 : 286,
+      height: compact ? 220 : 270,
       child: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _HomeHeaderPainter())),
@@ -68,12 +64,6 @@ class DonorHomeHeader extends StatelessWidget {
                               height: 1.18,
                               fontWeight: FontWeight.w600,
                             ),
-                          ),
-                          SizedBox(height: compact ? 8 : 12),
-                          _AvailabilityPill(
-                            status: status,
-                            compact: compact,
-                            onTap: onStatusTap,
                           ),
                         ],
                       ),
@@ -352,60 +342,6 @@ class _AvatarBadge extends StatelessWidget {
         Icons.person_rounded,
         color: AppColors.bloodRed,
         size: compact ? 36 : 52,
-      ),
-    );
-  }
-}
-
-class _AvailabilityPill extends StatelessWidget {
-  const _AvailabilityPill({
-    required this.status,
-    required this.compact,
-    required this.onTap,
-  });
-
-  final String status;
-  final bool compact;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.94),
-      borderRadius: BorderRadius.circular(26),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(26),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? 10 : 14,
-            vertical: compact ? 7 : 8,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: compact ? 10 : 12,
-                height: compact ? 10 : 12,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF36D95A),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              SizedBox(width: compact ? 7 : 9),
-              Text(
-                status,
-                style: TextStyle(
-                  color: const Color(0xFF171D24),
-                  fontSize: compact ? 11 : 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(width: compact ? 4 : 8),
-              Icon(Icons.keyboard_arrow_down_rounded, size: compact ? 18 : 22),
-            ],
-          ),
-        ),
       ),
     );
   }
