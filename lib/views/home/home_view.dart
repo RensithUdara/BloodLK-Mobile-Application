@@ -38,8 +38,6 @@ class _HomeViewState extends State<HomeView> {
                   SliverToBoxAdapter(
                     child: DonorHomeHeader(
                       name: _firstName(donor),
-                      bloodGroup: donor?.bloodGroup ?? '--',
-                      donorId: _donorId(donor),
                     ),
                   ),
                   SliverPadding(
@@ -104,13 +102,6 @@ class _HomeViewState extends State<HomeView> {
     final name = donor?.name.trim();
     if (name == null || name.isEmpty) return 'Donor';
     return name.split(RegExp(r'\s+')).first;
-  }
-
-  String _donorId(Donor? donor) {
-    final nic = donor?.nic.trim();
-    if (nic == null || nic.isEmpty) return 'Donor ID: BD123456';
-    final suffix = nic.length <= 6 ? nic : nic.substring(nic.length - 6);
-    return 'Donor ID: BD$suffix';
   }
 
   void _openFeature(DonorHomeFeature feature) {
