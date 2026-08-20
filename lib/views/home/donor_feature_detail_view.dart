@@ -186,7 +186,7 @@ class _InfoTile extends StatelessWidget {
               style: const TextStyle(
                 color: Color(0xFF303942),
                 fontSize: 14,
-                height: 1.35,
+                height: 1.42,
                 fontWeight: FontWeight.w600,
               ),
             ),
