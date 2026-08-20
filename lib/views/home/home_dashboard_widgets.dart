@@ -15,7 +15,7 @@ class DonorHomeHeader extends StatelessWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return SizedBox(
-      height: compact ? 148 : 172,
+      height: compact ? 132 : 158,
       child: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _HomeHeaderPainter())),
@@ -24,7 +24,7 @@ class DonorHomeHeader extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.fromLTRB(
                 compact ? 20 : 24,
-                compact ? 14 : 20,
+                compact ? 12 : 18,
                 compact ? 20 : 24,
                 0,
               ),
@@ -58,30 +58,6 @@ class DonorHomeHeader extends StatelessWidget {
                             fontSize: compact ? 10.5 : 13,
                             height: 1.2,
                             fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: compact ? 8 : 10),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: compact ? 10 : 12,
-                            vertical: compact ? 5 : 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.14),
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Text(
-                            'Ready to help today',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: compact ? 10 : 12,
-                              fontWeight: FontWeight.w700,
-                            ),
                           ),
                         ),
                       ],
@@ -209,11 +185,11 @@ class DonorHomeBottomNav extends StatelessWidget {
         compact ? 16 : 18,
         0,
         compact ? 16 : 18,
-        compact ? 10 : 14,
+        compact ? 8 : 12,
       ),
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 5 : 6,
-        vertical: compact ? 6 : 8,
+        vertical: compact ? 5 : 7,
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -266,7 +242,7 @@ class _AvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 70.0 : 76.0;
+    final size = compact ? 58.0 : 68.0;
     return Container(
       width: size,
       height: size,
@@ -275,7 +251,7 @@ class _AvatarBadge extends StatelessWidget {
       child: Icon(
         Icons.person_rounded,
         color: AppColors.bloodRed,
-        size: compact ? 45 : 50,
+        size: compact ? 38 : 45,
       ),
     );
   }
@@ -304,12 +280,12 @@ class _NavItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: SizedBox(
-          height: compact ? 52 : 58,
+          height: compact ? 48 : 54,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: color, size: compact ? 23 : 26),
-              const SizedBox(height: 3),
+              Icon(icon, color: color, size: compact ? 22 : 25),
+              const SizedBox(height: 2),
               Text(
                 label,
                 maxLines: 1,
@@ -343,13 +319,13 @@ class _RequestNavItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(40),
         child: SizedBox(
-          height: compact ? 62 : 68,
+          height: compact ? 56 : 62,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: compact ? 52 : 58,
-                height: compact ? 52 : 58,
+                width: compact ? 38 : 44,
+                height: compact ? 38 : 44,
                 decoration: BoxDecoration(
                   color: AppColors.bloodRed,
                   shape: BoxShape.circle,
@@ -361,15 +337,21 @@ class _RequestNavItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.bloodtype_rounded,
-                    color: Colors.white, size: 30),
+                child: Icon(
+                  Icons.bloodtype_rounded,
+                  color: Colors.white,
+                  size: compact ? 22 : 25,
+                ),
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 1),
               Text(
                 'Request',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: const Color(0xFF686E79),
                   fontSize: compact ? 9 : 10,
+                  height: 1,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -396,22 +378,22 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final darkWave = Path()
-      ..moveTo(0, size.height * 0.74)
+      ..moveTo(0, size.height * 0.72)
       ..cubicTo(
         size.width * 0.25,
-        size.height * 0.68,
+        size.height * 0.66,
         size.width * 0.48,
-        size.height * 0.75,
-        size.width * 0.72,
         size.height * 0.72,
+        size.width * 0.72,
+        size.height * 0.7,
       )
       ..cubicTo(
         size.width * 0.86,
-        size.height * 0.71,
+        size.height * 0.69,
         size.width * 0.93,
-        size.height * 0.78,
+        size.height * 0.76,
         size.width,
-        size.height * 0.72,
+        size.height * 0.7,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
@@ -423,22 +405,22 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final whiteWave = Path()
-      ..moveTo(0, size.height * 0.83)
+      ..moveTo(0, size.height * 0.8)
       ..cubicTo(
         size.width * 0.18,
-        size.height * 0.77,
+        size.height * 0.74,
         size.width * 0.44,
-        size.height * 0.83,
+        size.height * 0.8,
         size.width * 0.64,
-        size.height * 0.88,
+        size.height * 0.85,
       )
       ..cubicTo(
         size.width * 0.82,
-        size.height * 0.94,
+        size.height * 0.91,
         size.width * 0.94,
-        size.height * 0.89,
+        size.height * 0.86,
         size.width,
-        size.height * 0.84,
+        size.height * 0.81,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
