@@ -41,40 +41,30 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 124),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final compact = constraints.maxWidth < 360;
-                              return GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: donorHomeFeatures.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: compact ? 8 : 12,
-                                  mainAxisSpacing: compact ? 10 : 14,
-                                  childAspectRatio: compact ? 0.58 : 0.62,
-                                ),
-                                itemBuilder: (context, index) {
-                                  final feature = donorHomeFeatures[index];
-                                  return DonorFeatureCard(
-                                    feature: feature,
-                                    onTap: () => _openFeature(feature),
-                                  );
-                                },
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 108),
+                    sliver: SliverLayoutBuilder(
+                      builder: (context, constraints) {
+                        final compact = constraints.crossAxisExtent < 360;
+                        return SliverGrid(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: compact ? 8 : 10,
+                            mainAxisSpacing: compact ? 9 : 11,
+                            childAspectRatio: compact ? 0.78 : 0.84,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final feature = donorHomeFeatures[index];
+                              return DonorFeatureCard(
+                                feature: feature,
+                                onTap: () => _openFeature(feature),
                               );
                             },
+                            childCount: donorHomeFeatures.length,
                           ),
-                          const SizedBox(height: 20),
-                          EveryDropBanner(
-                            onTap: () => _openFeature(donorHomeFeatures[8]),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ],
