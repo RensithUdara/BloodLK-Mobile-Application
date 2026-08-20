@@ -155,9 +155,9 @@ class DonorRegistrationView extends StatelessWidget {
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
                     22,
-                    compact ? 76 : 104,
+                    compact ? 128 : 150,
                     22,
-                    16,
+                    12,
                   ),
                   child: Form(
                     key: formKey,
@@ -204,7 +204,7 @@ class DonorRegistrationView extends StatelessWidget {
                           viewModel: viewModel,
                           compact: compact,
                         ),
-                        SizedBox(height: compact ? 10 : 14),
+                        SizedBox(height: compact ? 8 : 12),
                         _FirstTimeDonorCard(
                           value: viewModel.neverDonated,
                           compact: compact,
@@ -212,19 +212,19 @@ class DonorRegistrationView extends StatelessWidget {
                               viewModel.updateNeverDonated(value),
                         ),
                         if (!viewModel.neverDonated) ...[
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           _LastDonationDateTile(
                             date: viewModel.lastDonationDate,
                             compact: compact,
                             onTap: () => _selectDate(context),
                           ),
                         ],
-                        SizedBox(height: compact ? 16 : 22),
+                        SizedBox(height: compact ? 12 : 18),
                         _RegisterButton(
                           compact: compact,
                           onTap: () => _startRegistration(context, formKey),
                         ),
-                        SizedBox(height: compact ? 12 : 16),
+                        SizedBox(height: compact ? 8 : 12),
                         const _SafetyNote(),
                       ],
                     ),
