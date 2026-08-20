@@ -115,137 +115,145 @@ class _AddDonationViewState extends State<AddDonationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _DonationAppBar(title: 'Add Donations'),
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  children: [
-                    _SectionCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _Label('Donation Date'),
-                          const SizedBox(height: 8),
-                          InkWell(
-                            onTap: _pickDate,
-                            borderRadius: BorderRadius.circular(14),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 15,
-                              ),
-                              decoration: _fieldDecoration(),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_month_rounded,
-                                    color: AppColors.bloodRed,
+      body: Stack(
+        children: [
+          Positioned.fill(child: CustomPaint(painter: _DonationBackdrop())),
+          SafeArea(
+            child: Column(
+              children: [
+                const _DonationAppBar(title: 'Add Donations'),
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                      children: [
+                        _SectionCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _Label('Donation Date'),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: _pickDate,
+                                borderRadius: BorderRadius.circular(14),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 15,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      _donationDate == null
-                                          ? 'Select donation date'
-                                          : _dateFormat.format(_donationDate!),
-                                      style: TextStyle(
-                                        color: _donationDate == null
-                                            ? const Color(0xFF8A9099)
-                                            : const Color(0xFF171D24),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
+                                  decoration: _fieldDecoration(),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month_rounded,
+                                        color: AppColors.bloodRed,
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          _Label('Patients Helped'),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [1, 2, 3]
-                                .map(
-                                  (count) => Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        right: count == 3 ? 0 : 8,
-                                      ),
-                                      child: _PatientChoice(
-                                        count: count,
-                                        selected: _patientCount == count,
-                                        onTap: () => setState(
-                                          () => _patientCount = count,
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          _donationDate == null
+                                              ? 'Select donation date'
+                                              : _dateFormat
+                                                  .format(_donationDate!),
+                                          style: TextStyle(
+                                            color: _donationDate == null
+                                                ? const Color(0xFF8A9099)
+                                                : const Color(0xFF171D24),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              const _Label('Patients Helped'),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [1, 2, 3]
+                                    .map(
+                                      (count) => Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            right: count == 3 ? 0 : 8,
+                                          ),
+                                          child: _PatientChoice(
+                                            count: count,
+                                            selected: _patientCount == count,
+                                            onTap: () => setState(
+                                              () => _patientCount = count,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                              const SizedBox(height: 18),
+                              const _Label('Location'),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _locationController,
+                                textInputAction: TextInputAction.done,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      'Hospital, blood bank, or camp name',
+                                  prefixIcon: const Icon(
+                                    Icons.location_on_rounded,
+                                    color: AppColors.bloodRed,
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xFFFFFBFB),
+                                  border: _inputBorder(),
+                                  enabledBorder: _inputBorder(),
+                                  focusedBorder: _inputBorder(
+                                    color: AppColors.bloodRed,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter donation location';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: _isSaving ? null : _saveDonation,
+                          icon: _isSaving
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
                                   ),
                                 )
-                                .toList(),
-                          ),
-                          const SizedBox(height: 18),
-                          _Label('Location'),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _locationController,
-                            textInputAction: TextInputAction.done,
-                            decoration: InputDecoration(
-                              hintText: 'Hospital, blood bank, or camp name',
-                              prefixIcon: const Icon(
-                                Icons.location_on_rounded,
-                                color: AppColors.bloodRed,
-                              ),
-                              filled: true,
-                              fillColor: const Color(0xFFFFFBFB),
-                              border: _inputBorder(),
-                              enabledBorder: _inputBorder(),
-                              focusedBorder: _inputBorder(
-                                color: AppColors.bloodRed,
-                              ),
+                              : const Icon(Icons.save_rounded),
+                          label:
+                              Text(_isSaving ? 'Saving...' : 'Save Donation'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.bloodRed,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter donation location';
-                              }
-                              return null;
-                            },
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton.icon(
-                      onPressed: _isSaving ? null : _saveDonation,
-                      icon: _isSaving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.save_rounded),
-                      label: Text(_isSaving ? 'Saving...' : 'Save Donation'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.bloodRed,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -273,15 +281,8 @@ class _DonationAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 10, 18, 14),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFE71920), Color(0xFFC9000B)],
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 10, 18, 8),
       child: Row(
         children: [
           IconButton.filled(
@@ -301,7 +302,7 @@ class _DonationAppBar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -393,4 +394,34 @@ class _PatientChoice extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DonationBackdrop extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = Colors.white);
+
+    final rect = Rect.fromLTWH(0, 0, size.width, 170);
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE71920), Color(0xFFC9000B)],
+        ).createShader(rect),
+    );
+
+    final wave = Path()
+      ..moveTo(0, 128)
+      ..cubicTo(size.width * 0.18, 100, size.width * 0.42, 150, size.width, 116)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(wave, Paint()..color = Colors.white);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
