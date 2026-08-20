@@ -155,7 +155,7 @@ class _SettingsViewState extends State<SettingsView> {
                           ),
                         )
                       : ListView(
-                          padding: const EdgeInsets.fromLTRB(18, 12, 18, 24),
+                          padding: const EdgeInsets.fromLTRB(18, 28, 18, 24),
                           children: [
                             _SavingIndicator(isSaving: _isSaving),
                             _SettingsSection(
@@ -656,7 +656,7 @@ class _SettingsBackdrop extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.drawRect(Offset.zero & size, Paint()..color = Colors.white);
 
-    final rect = Rect.fromLTWH(0, 0, size.width, 150);
+    final rect = Rect.fromLTWH(0, 0, size.width, 180);
     canvas.drawRect(
       rect,
       Paint()
@@ -668,8 +668,8 @@ class _SettingsBackdrop extends CustomPainter {
     );
 
     final wave = Path()
-      ..moveTo(0, 108)
-      ..cubicTo(size.width * 0.18, 88, size.width * 0.46, 122, size.width, 96)
+      ..moveTo(0, 132)
+      ..cubicTo(size.width * 0.18, 112, size.width * 0.46, 146, size.width, 120)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
