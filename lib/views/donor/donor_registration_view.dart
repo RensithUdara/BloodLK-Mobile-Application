@@ -154,9 +154,9 @@ class DonorRegistrationView extends StatelessWidget {
                 final compact = constraints.maxHeight < 760;
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
-                    24,
-                    compact ? 150 : 186,
-                    24,
+                    compact ? 18 : 24,
+                    compact ? 166 : 196,
+                    compact ? 18 : 24,
                     18,
                   ),
                   child: Form(
@@ -293,15 +293,15 @@ class DonorRegistrationView extends StatelessWidget {
   }
 
   double compactHeaderTop(BuildContext context) {
-    return MediaQuery.sizeOf(context).height < 760 ? 70 : 82;
+    return MediaQuery.sizeOf(context).height < 760 ? 72 : 84;
   }
 
   double compactHeaderFont(BuildContext context) {
-    return MediaQuery.sizeOf(context).height < 760 ? 24 : 30;
+    return MediaQuery.sizeOf(context).height < 760 ? 27 : 34;
   }
 
   double compactHeaderSubFont(BuildContext context) {
-    return MediaQuery.sizeOf(context).height < 760 ? 13 : 16;
+    return MediaQuery.sizeOf(context).height < 760 ? 14 : 17;
   }
 }
 
@@ -365,7 +365,7 @@ class _BloodGroupField extends StatelessWidget {
                 group,
                 style: TextStyle(
                   color: const Color(0xFF17232B),
-                  fontSize: compact ? 16 : 18,
+                  fontSize: compact ? 15 : 17,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -393,7 +393,10 @@ class _FirstTimeDonorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(compact ? 14 : 18),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 14 : 18,
+        vertical: compact ? 13 : 18,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFFFFEBED),
         borderRadius: BorderRadius.circular(20),
@@ -594,7 +597,8 @@ InputDecoration _fieldDecoration(
       fontWeight: FontWeight.w500,
     ),
     prefixIcon: Padding(
-      padding: EdgeInsets.fromLTRB(14, compact ? 10 : 12, 12, compact ? 10 : 12),
+      padding:
+          EdgeInsets.fromLTRB(14, compact ? 10 : 12, 12, compact ? 10 : 12),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
