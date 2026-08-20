@@ -8,6 +8,7 @@ import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
+import 'settings_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -115,6 +116,10 @@ class _HomeViewState extends State<HomeView> {
       _openProfile();
       return;
     }
+    if (feature.title == 'Settings') {
+      _openSettings();
+      return;
+    }
 
     Navigator.push(
       context,
@@ -157,6 +162,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => DonorProfileView()),
+    );
+  }
+
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SettingsView()),
     );
   }
 }
