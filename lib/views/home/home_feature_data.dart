@@ -169,17 +169,6 @@ const donorHomeFeatures = [
     ],
   ),
   DonorHomeFeature(
-    title: 'Availability Status',
-    subtitle: 'Set your availability\nto help others',
-    icon: Icons.how_to_reg_rounded,
-    description: 'Let requesters know whether you can currently help.',
-    items: [
-      'Available: ready to be contacted.',
-      'Busy: temporarily unavailable.',
-      'Resting: recently donated or recovering.',
-    ],
-  ),
-  DonorHomeFeature(
     title: 'Achievements',
     subtitle: 'View your badges\nand milestones',
     icon: Icons.emoji_events_rounded,
