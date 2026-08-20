@@ -22,6 +22,17 @@ class DonorRepository {
     return _donors.doc(uid).set(donor.toMap(), SetOptions(merge: true));
   }
 
+  Stream<Donor?> watchCurrentDonor() {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return Stream.value(null);
+
+    return _donors.doc(uid).snapshots().map((snapshot) {
+      final data = snapshot.data();
+      if (data == null) return null;
+      return Donor.fromMap(data);
+    });
+  }
+
   Stream<List<Donor>> watchAllDonors() {
     return _donors.snapshots().map(
           (snapshot) => snapshot.docs
