@@ -64,30 +64,36 @@ class _SplashViewState extends State<SplashView>
                       24,
                       compact ? 18 : 34,
                       24,
-                      compact ? 18 : 28,
+                      compact ? 22 : 34,
                     ),
-                    child: Column(
+                    child: Stack(
                       children: [
-                        const Spacer(),
-                        FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: ScaleTransition(
-                            scale: _scaleAnimation,
-                            child: Column(
-                              children: [
-                                _LogoGlow(compact: compact),
-                                SizedBox(height: compact ? 14 : 22),
-                                _BrandMark(compact: compact),
-                              ],
+                        Align(
+                          alignment: Alignment(0, compact ? -0.48 : -0.36),
+                          child: FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: ScaleTransition(
+                              scale: _scaleAnimation,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _LogoGlow(compact: compact),
+                                  SizedBox(height: compact ? 14 : 22),
+                                  _BrandMark(compact: compact),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                        const Spacer(),
-                        FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: _FeatureRow(compact: compact),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: compact ? 56 : 72,
+                          child: FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: _FeatureRow(compact: compact),
+                          ),
                         ),
-                        const Spacer(flex: 4),
                       ],
                     ),
                   );
