@@ -78,7 +78,7 @@ class DonorRegistrationView extends StatelessWidget {
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushReplacementNamed(context, AppRoutes.donorSearch);
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
