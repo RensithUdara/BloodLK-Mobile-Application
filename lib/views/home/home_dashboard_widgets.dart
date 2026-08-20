@@ -23,7 +23,7 @@ class DonorHomeHeader extends StatelessWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return SizedBox(
-      height: compact ? 260 : 300,
+      height: compact ? 238 : 286,
       child: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _HomeHeaderPainter())),
@@ -31,19 +31,19 @@ class DonorHomeHeader extends StatelessWidget {
             bottom: false,
             child: Padding(
               padding: EdgeInsets.fromLTRB(
+                compact ? 16 : 24,
                 compact ? 14 : 24,
-                compact ? 18 : 26,
-                compact ? 14 : 24,
+                compact ? 16 : 24,
                 0,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _AvatarBadge(compact: compact),
-                  SizedBox(width: compact ? 10 : 18),
+                  SizedBox(width: compact ? 9 : 18),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(top: compact ? 7 : 10),
+                      padding: EdgeInsets.only(top: compact ? 6 : 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -53,23 +53,23 @@ class DonorHomeHeader extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: compact ? 17 : 24,
+                              fontSize: compact ? 16 : 22,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
-                          SizedBox(height: compact ? 6 : 8),
+                          SizedBox(height: compact ? 5 : 7),
                           Text(
                             'Thank you for being a life saver!',
                             maxLines: compact ? 2 : 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.92),
-                              fontSize: compact ? 10.5 : 14,
-                              height: 1.2,
+                              fontSize: compact ? 10 : 13,
+                              height: 1.18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: compact ? 10 : 14),
+                          SizedBox(height: compact ? 8 : 12),
                           _AvailabilityPill(
                             status: status,
                             compact: compact,
@@ -79,7 +79,7 @@ class DonorHomeHeader extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: compact ? 7 : 12),
+                  SizedBox(width: compact ? 8 : 12),
                   _BloodGroupCard(
                     bloodGroup: bloodGroup,
                     donorId: donorId,
@@ -97,8 +97,8 @@ class DonorHomeHeader extends StatelessWidget {
               child: Center(
                 child: Icon(
                   Icons.favorite_rounded,
-                  color: Colors.red.shade800.withValues(alpha: 0.28),
-                  size: 72,
+                  color: Colors.red.shade800.withValues(alpha: 0.2),
+                  size: compact ? 54 : 72,
                 ),
               ),
             ),
@@ -342,7 +342,7 @@ class _AvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 58.0 : 86.0;
+    final size = compact ? 54.0 : 78.0;
     return Container(
       width: size,
       height: size,
@@ -351,7 +351,7 @@ class _AvatarBadge extends StatelessWidget {
       child: Icon(
         Icons.person_rounded,
         color: AppColors.bloodRed,
-        size: compact ? 39 : 58,
+        size: compact ? 36 : 52,
       ),
     );
   }
@@ -378,26 +378,26 @@ class _AvailabilityPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 11 : 15,
-            vertical: compact ? 8 : 9,
+            horizontal: compact ? 10 : 14,
+            vertical: compact ? 7 : 8,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: compact ? 10 : 12,
+                height: compact ? 10 : 12,
                 decoration: const BoxDecoration(
                   color: Color(0xFF36D95A),
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 9),
+              SizedBox(width: compact ? 7 : 9),
               Text(
                 status,
                 style: TextStyle(
                   color: const Color(0xFF171D24),
-                  fontSize: compact ? 12 : 14,
+                  fontSize: compact ? 11 : 13,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -425,17 +425,17 @@ class _BloodGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: compact ? 112 : 126,
+      width: compact ? 104 : 120,
       padding: EdgeInsets.fromLTRB(
-        compact ? 12 : 14,
-        compact ? 13 : 16,
-        compact ? 12 : 14,
-        compact ? 13 : 16,
+        compact ? 11 : 13,
+        compact ? 11 : 14,
+        compact ? 11 : 13,
+        compact ? 11 : 14,
       ),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(compact ? 18 : 22),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        borderRadius: BorderRadius.circular(compact ? 16 : 20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,9 +446,9 @@ class _BloodGroupCard extends StatelessWidget {
               Icon(
                 Icons.bloodtype_rounded,
                 color: Colors.white,
-                size: compact ? 22 : 32,
+                size: compact ? 19 : 28,
               ),
-              SizedBox(width: compact ? 7 : 0),
+              SizedBox(width: compact ? 6 : 0),
               if (compact)
                 const Expanded(
                   child: Text(
@@ -457,8 +457,8 @@ class _BloodGroupCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 9,
-                      height: 1.05,
+                      fontSize: 8,
+                      height: 1.1,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -483,18 +483,18 @@ class _BloodGroupCard extends StatelessWidget {
             bloodGroup,
             style: TextStyle(
               color: Colors.white,
-              fontSize: compact ? 24 : 25,
+              fontSize: compact ? 21 : 24,
               fontWeight: FontWeight.w900,
             ),
           ),
-          SizedBox(height: compact ? 8 : 10),
+          SizedBox(height: compact ? 6 : 8),
           Text(
             donorId,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: Colors.white,
-              fontSize: compact ? 9 : 10,
+              fontSize: compact ? 8 : 9.5,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -612,18 +612,18 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final darkWave = Path()
-      ..moveTo(0, size.height * 0.68)
+      ..moveTo(0, size.height * 0.7)
       ..cubicTo(
         size.width * 0.23,
-        size.height * 0.58,
+        size.height * 0.62,
         size.width * 0.47,
-        size.height * 0.72,
+        size.height * 0.7,
         size.width * 0.7,
-        size.height * 0.67,
+        size.height * 0.66,
       )
       ..cubicTo(
         size.width * 0.86,
-        size.height * 0.64,
+        size.height * 0.63,
         size.width * 0.93,
         size.height * 0.72,
         size.width,
@@ -639,18 +639,18 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final whiteWave = Path()
-      ..moveTo(0, size.height * 0.79)
+      ..moveTo(0, size.height * 0.8)
       ..cubicTo(
         size.width * 0.18,
-        size.height * 0.65,
+        size.height * 0.7,
         size.width * 0.44,
-        size.height * 0.79,
+        size.height * 0.8,
         size.width * 0.64,
-        size.height * 0.86,
+        size.height * 0.84,
       )
       ..cubicTo(
         size.width * 0.82,
-        size.height * 0.92,
+        size.height * 0.9,
         size.width * 0.94,
         size.height * 0.84,
         size.width,
