@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../data/models/donor.dart';
 import '../../data/repositories/donor_repository.dart';
-import '../../viewmodels/donor_search_view_model.dart';
-import '../donor/donor_search_view.dart';
 import 'achievements_view.dart';
 import 'add_donation_view.dart';
 import 'donor_feature_detail_view.dart';
@@ -134,15 +131,12 @@ class _HomeViewState extends State<HomeView> {
     if (index == 0) return;
 
     if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChangeNotifierProvider(
-            create: (_) => DonorSearchViewModel(),
-            child: const DonorSearchView(),
-          ),
-        ),
-      );
+      _openFeature(_featureByTitle('Donation Centers'));
+      return;
+    }
+
+    if (index == 2) {
+      _openAddDonation();
       return;
     }
 
@@ -152,7 +146,6 @@ class _HomeViewState extends State<HomeView> {
     }
 
     final featureTitle = switch (index) {
-      2 => 'Emergency Requests',
       3 => 'Donation Centers',
       _ => 'My Profile',
     };
