@@ -51,7 +51,7 @@ class _HomeViewState extends State<HomeView> {
                             crossAxisCount: 3,
                             crossAxisSpacing: compact ? 8 : 10,
                             mainAxisSpacing: compact ? 9 : 11,
-                            childAspectRatio: compact ? 0.78 : 0.84,
+                            childAspectRatio: compact ? 0.94 : 1.02,
                           ),
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
@@ -136,17 +136,21 @@ class _HomeViewState extends State<HomeView> {
       return;
     }
 
-    final featureIndex = switch (index) {
-      2 => 4,
-      3 => 1,
-      4 => -1,
-      _ => 0,
-    };
-    if (featureIndex == -1) {
+    if (index == 4) {
       _openProfile();
       return;
     }
-    _openFeature(donorHomeFeatures[featureIndex]);
+
+    final featureTitle = switch (index) {
+      2 => 'Emergency Requests',
+      3 => 'Donation Centers',
+      _ => 'My Profile',
+    };
+    _openFeature(_featureByTitle(featureTitle));
+  }
+
+  DonorHomeFeature _featureByTitle(String title) {
+    return donorHomeFeatures.firstWhere((feature) => feature.title == title);
   }
 
   void _openProfile() {
