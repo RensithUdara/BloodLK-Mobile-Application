@@ -61,7 +61,7 @@ class _SearchHeader extends StatelessWidget {
     return SizedBox(
       height: 140,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20, compact ? 10 : 20, 12, 0),
+        padding: EdgeInsets.fromLTRB(20, compact ? 4 : 14, 12, 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -77,13 +77,13 @@ class _SearchHeader extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Text(
                     'Search and connect with donors\nin your area.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 13,
-                      height: 1.35,
+                      height: 1.12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
