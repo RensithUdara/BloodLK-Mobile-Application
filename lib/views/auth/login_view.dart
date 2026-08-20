@@ -42,26 +42,6 @@ class LoginView extends StatelessWidget {
         children: [
           Positioned.fill(child: CustomPaint(painter: _LoginBackdropPainter())),
           SafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10, right: 18),
-                child: IconButton.filled(
-                  tooltip: 'Admin login',
-                  onPressed: () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.adminLogin,
-                  ),
-                  icon: const Icon(Icons.admin_panel_settings_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.white.withValues(alpha: 0.92),
-                    foregroundColor: AppColors.deepMaroon,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxHeight < 760;
@@ -110,14 +90,32 @@ class LoginView extends StatelessWidget {
                           SizedBox(height: compact ? 10 : 14),
                           const _PrivacyNotice(),
                           const Spacer(),
-                          SizedBox(height: compact ? 12 : 20),
-                          _FooterMessage(compact: compact),
                         ],
                       ),
                     ),
                   ),
                 );
               },
+            ),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10, right: 18),
+                child: IconButton.filled(
+                  tooltip: 'Admin login',
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppRoutes.adminLogin,
+                  ),
+                  icon: const Icon(Icons.admin_panel_settings_rounded),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.92),
+                    foregroundColor: AppColors.deepMaroon,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -626,45 +624,6 @@ class _PrivacyNotice extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _FooterMessage extends StatelessWidget {
-  const _FooterMessage({required this.compact});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(
-          Icons.monitor_heart_outlined,
-          color: Colors.white,
-          size: compact ? 30 : 38,
-        ),
-        SizedBox(height: compact ? 4 : 6),
-        Text(
-          'Be a hero. Donate blood.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFFFFD5D5),
-            fontSize: compact ? 10 : 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Save lives.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: compact ? 11 : 13,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ],
     );
   }
 }
