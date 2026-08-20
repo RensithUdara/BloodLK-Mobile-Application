@@ -6,13 +6,9 @@ class DonorHomeHeader extends StatelessWidget {
   const DonorHomeHeader({
     super.key,
     required this.name,
-    required this.bloodGroup,
-    required this.donorId,
   });
 
   final String name;
-  final String bloodGroup;
-  final String donorId;
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +64,6 @@ class DonorHomeHeader extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(width: compact ? 12 : 12),
-                  _BloodGroupCard(
-                    bloodGroup: bloodGroup,
-                    donorId: donorId,
-                    compact: compact,
                   ),
                 ],
               ),
@@ -354,100 +344,6 @@ class _AvatarBadge extends StatelessWidget {
         Icons.person_rounded,
         color: AppColors.bloodRed,
         size: compact ? 40 : 52,
-      ),
-    );
-  }
-}
-
-class _BloodGroupCard extends StatelessWidget {
-  const _BloodGroupCard({
-    required this.bloodGroup,
-    required this.donorId,
-    required this.compact,
-  });
-
-  final String bloodGroup;
-  final String donorId;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: compact ? 96 : 142,
-      padding: EdgeInsets.fromLTRB(
-        compact ? 10 : 14,
-        compact ? 12 : 13,
-        compact ? 10 : 14,
-        compact ? 12 : 13,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(compact ? 16 : 20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        children: [
-          if (!compact) ...[
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFFF6A2D), Color(0xFFE71920)],
-                ),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.bloodtype_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 11),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Blood Group',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: compact ? 8.5 : 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  bloodGroup,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: compact ? 24 : 24,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                if (!compact) ...[
-                  const SizedBox(height: 7),
-                  Text(
-                    donorId,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 9,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
