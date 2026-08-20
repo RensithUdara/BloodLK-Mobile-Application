@@ -5,11 +5,13 @@ import '../../data/repositories/donor_repository.dart';
 import '../../viewmodels/donor_search_view_model.dart';
 import '../donor/donor_search_view.dart';
 import 'achievements_view.dart';
+import 'add_donation_view.dart';
 import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
 import 'help_center_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
+import 'past_donations_view.dart';
 import 'settings_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -99,6 +101,14 @@ class _HomeViewState extends State<HomeView> {
       _openProfile();
       return;
     }
+    if (feature.title == 'Add Donations') {
+      _openAddDonation();
+      return;
+    }
+    if (feature.title == 'Past Donations') {
+      _openPastDonations();
+      return;
+    }
     if (feature.title == 'Settings') {
       _openSettings();
       return;
@@ -157,6 +167,20 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => DonorProfileView()),
+    );
+  }
+
+  void _openAddDonation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddDonationView()),
+    );
+  }
+
+  void _openPastDonations() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PastDonationsView()),
     );
   }
 
