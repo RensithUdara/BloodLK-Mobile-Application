@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/app_constants.dart';
 import '../../data/models/donor.dart';
 import '../../data/repositories/donor_repository.dart';
 import '../../viewmodels/donor_search_view_model.dart';
@@ -19,7 +18,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final _donorRepository = DonorRepository();
-  String _availability = 'Available';
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +37,6 @@ class _HomeViewState extends State<HomeView> {
                       name: _firstName(donor),
                       bloodGroup: donor?.bloodGroup ?? '--',
                       donorId: _donorId(donor),
-                      status: _availability,
-                      onStatusTap: _showAvailabilitySheet,
                     ),
                   ),
                   SliverPadding(
@@ -161,94 +157,6 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => DonorProfileView()),
-    );
-  }
-
-  void _showAvailabilitySheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Availability Status',
-                  style: TextStyle(
-                    color: Color(0xFF171D24),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                _AvailabilityOption(
-                  label: 'Available',
-                  icon: Icons.check_circle_rounded,
-                  selected: _availability == 'Available',
-                  onTap: () => _updateAvailability('Available'),
-                ),
-                _AvailabilityOption(
-                  label: 'Busy',
-                  icon: Icons.pause_circle_rounded,
-                  selected: _availability == 'Busy',
-                  onTap: () => _updateAvailability('Busy'),
-                ),
-                _AvailabilityOption(
-                  label: 'Resting',
-                  icon: Icons.hotel_rounded,
-                  selected: _availability == 'Resting',
-                  onTap: () => _updateAvailability('Resting'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _updateAvailability(String value) {
-    setState(() => _availability = value);
-    Navigator.pop(context);
-  }
-}
-
-class _AvailabilityOption extends StatelessWidget {
-  const _AvailabilityOption({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: AppColors.bloodRed),
-      title: Text(
-        label,
-        style: const TextStyle(
-          color: Color(0xFF171D24),
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-      trailing: selected
-          ? const Icon(Icons.done_rounded, color: AppColors.bloodRed)
-          : null,
     );
   }
 }
