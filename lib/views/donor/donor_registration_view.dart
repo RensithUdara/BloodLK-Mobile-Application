@@ -154,10 +154,10 @@ class DonorRegistrationView extends StatelessWidget {
                 final compact = constraints.maxHeight < 760;
                 return SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
-                    22,
-                    compact ? 128 : 150,
-                    22,
-                    12,
+                    24,
+                    compact ? 150 : 186,
+                    24,
+                    18,
                   ),
                   child: Form(
                     key: formKey,
@@ -212,19 +212,19 @@ class DonorRegistrationView extends StatelessWidget {
                               viewModel.updateNeverDonated(value),
                         ),
                         if (!viewModel.neverDonated) ...[
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           _LastDonationDateTile(
                             date: viewModel.lastDonationDate,
                             compact: compact,
                             onTap: () => _selectDate(context),
                           ),
                         ],
-                        SizedBox(height: compact ? 12 : 18),
+                        SizedBox(height: compact ? 18 : 26),
                         _RegisterButton(
                           compact: compact,
                           onTap: () => _startRegistration(context, formKey),
                         ),
-                        SizedBox(height: compact ? 8 : 12),
+                        SizedBox(height: compact ? 14 : 18),
                         const _SafetyNote(),
                       ],
                     ),
@@ -325,14 +325,14 @@ class _RegistrationField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: compact ? 6 : 10),
+      padding: EdgeInsets.only(bottom: compact ? 10 : 14),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         validator: validator,
         style: TextStyle(
           color: const Color(0xFF17232B),
-          fontSize: compact ? 12 : 14,
+          fontSize: compact ? 14 : 16,
           fontWeight: FontWeight.w500,
         ),
         decoration: _fieldDecoration(hint, icon, compact: compact),
@@ -365,7 +365,7 @@ class _BloodGroupField extends StatelessWidget {
                 group,
                 style: TextStyle(
                   color: const Color(0xFF17232B),
-                  fontSize: compact ? 13 : 15,
+                  fontSize: compact ? 16 : 18,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -393,7 +393,7 @@ class _FirstTimeDonorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(compact ? 10 : 14),
+      padding: EdgeInsets.all(compact ? 14 : 18),
       decoration: BoxDecoration(
         color: const Color(0xFFFFEBED),
         borderRadius: BorderRadius.circular(20),
@@ -401,8 +401,8 @@ class _FirstTimeDonorCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: compact ? 38 : 48,
-            height: compact ? 38 : 48,
+            width: compact ? 48 : 58,
+            height: compact ? 48 : 58,
             decoration: const BoxDecoration(
               color: Color(0xFFFFD1D6),
               shape: BoxShape.circle,
@@ -410,7 +410,7 @@ class _FirstTimeDonorCard extends StatelessWidget {
             child: Icon(
               Icons.monitor_heart_rounded,
               color: AppColors.bloodRed,
-              size: compact ? 21 : 27,
+              size: compact ? 27 : 32,
             ),
           ),
           const SizedBox(width: 14),
@@ -422,7 +422,7 @@ class _FirstTimeDonorCard extends StatelessWidget {
                   'First time donor',
                   style: TextStyle(
                     color: const Color(0xFF17232B),
-                    fontSize: compact ? 12 : 15,
+                    fontSize: compact ? 15 : 17,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -431,7 +431,7 @@ class _FirstTimeDonorCard extends StatelessWidget {
                   'Help us serve you better',
                   style: TextStyle(
                     color: const Color(0xFF5E6872),
-                    fontSize: compact ? 10 : 12,
+                    fontSize: compact ? 12 : 13,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -471,7 +471,7 @@ class _LastDonationDateTile extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: compact ? 10 : 13,
+          vertical: compact ? 13 : 16,
         ),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -489,7 +489,7 @@ class _LastDonationDateTile extends StatelessWidget {
                     : DateFormat('yyyy-MM-dd').format(date!),
                 style: TextStyle(
                   color: const Color(0xFF17232B),
-                  fontSize: compact ? 12 : 14,
+                  fontSize: compact ? 14 : 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -532,7 +532,7 @@ class _RegisterButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           child: SizedBox(
             width: double.infinity,
-            height: compact ? 46 : 52,
+            height: compact ? 54 : 60,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -540,7 +540,7 @@ class _RegisterButton extends StatelessWidget {
                   'Register as a Donor',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: compact ? 13 : 16,
+                    fontSize: compact ? 16 : 18,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -571,7 +571,7 @@ class _SafetyNote extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(0xFF5E6872),
-              fontSize: 11,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -590,21 +590,21 @@ InputDecoration _fieldDecoration(
     hintText: hint,
     hintStyle: TextStyle(
       color: const Color(0xFF6F7177),
-      fontSize: compact ? 12 : 14,
+      fontSize: compact ? 15 : 16,
       fontWeight: FontWeight.w500,
     ),
     prefixIcon: Padding(
-      padding: EdgeInsets.fromLTRB(12, compact ? 7 : 9, 10, compact ? 7 : 9),
+      padding: EdgeInsets.fromLTRB(14, compact ? 10 : 12, 12, compact ? 10 : 12),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: AppColors.bloodRed, size: compact ? 19 : 23),
+          Icon(icon, color: AppColors.bloodRed, size: compact ? 24 : 28),
           Container(
             width: 1,
-            height: compact ? 22 : 28,
+            height: compact ? 30 : 34,
             margin: EdgeInsets.only(
-              left: compact ? 11 : 13,
-              right: compact ? 7 : 9,
+              left: compact ? 15 : 18,
+              right: compact ? 10 : 12,
             ),
             color: Colors.black.withValues(alpha: 0.12),
           ),
@@ -615,7 +615,7 @@ InputDecoration _fieldDecoration(
     fillColor: Colors.white,
     contentPadding: EdgeInsets.symmetric(
       horizontal: 16,
-      vertical: compact ? 10 : 14,
+      vertical: compact ? 16 : 20,
     ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),
