@@ -64,6 +64,18 @@ const donorHomeFeatures = [
     ],
   ),
   DonorHomeFeature(
+    title: 'Add Donations',
+    subtitle: 'Record a new\ndonation',
+    icon: Icons.add_circle_rounded,
+    description:
+        'Add your latest donation date so your eligibility and achievements stay updated.',
+    items: [
+      'Record the date after every donation.',
+      'Keep your donor recovery countdown accurate.',
+      'Update your donation milestones.',
+    ],
+  ),
+  DonorHomeFeature(
     title: 'Next Eligibility',
     subtitle: 'Check when you can\ndonate again',
     icon: Icons.calendar_month_rounded,
