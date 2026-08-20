@@ -61,7 +61,7 @@ class _SearchHeader extends StatelessWidget {
     return SizedBox(
       height: 140,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(20, compact ? 20 : 30, 12, 0),
+        padding: EdgeInsets.fromLTRB(20, compact ? 10 : 20, 12, 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
