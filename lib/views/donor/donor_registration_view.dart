@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../app/app_routes.dart';
 import '../../core/constants/app_constants.dart';
 import '../../viewmodels/donor_registration_view_model.dart';
+import '../../widgets/custom_app_dialog.dart';
 
 class DonorRegistrationView extends StatelessWidget {
   const DonorRegistrationView({super.key});
@@ -24,17 +25,13 @@ class DonorRegistrationView extends StatelessWidget {
     if (daysLeft != null) {
       await showDialog<void>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Not eligible yet'),
-          content: Text(
-            'Five months have not passed since your last donation.\n\nYou can register in $daysLeft days.',
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
+        builder: (context) => CustomAppDialog(
+          icon: Icons.calendar_month_rounded,
+          title: 'Not eligible yet',
+          message:
+              'Five months have not passed since your last donation. You can register in $daysLeft days.',
+          primaryText: 'OK',
+          onPrimary: () => Navigator.pop(context),
         ),
       );
       return;
@@ -72,19 +69,30 @@ class DonorRegistrationView extends StatelessWidget {
       await viewModel.registerDonor();
       if (!context.mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registered successfully'),
-          backgroundColor: Colors.green,
+      await showDialog<void>(
+        context: context,
+        builder: (context) => CustomAppDialog(
+          icon: Icons.verified_rounded,
+          title: 'Registered successfully',
+          message:
+              'Thank you for joining BloodLK. Your donor profile is ready.',
+          primaryText: 'Continue',
+          onPrimary: () => Navigator.pop(context),
         ),
       );
+      if (!context.mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $error'),
-          backgroundColor: AppColors.bloodRed,
+      showDialog<void>(
+        context: context,
+        builder: (context) => CustomAppDialog(
+          icon: Icons.error_outline_rounded,
+          title: 'Registration failed',
+          message: error.toString(),
+          primaryText: 'OK',
+          destructive: true,
+          onPrimary: () => Navigator.pop(context),
         ),
       );
     }
