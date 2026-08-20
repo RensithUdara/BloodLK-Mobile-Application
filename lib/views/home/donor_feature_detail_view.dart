@@ -88,63 +88,6 @@ class _DetailAppBar extends StatelessWidget {
   }
 }
 
-class _FeatureHero extends StatelessWidget {
-  const _FeatureHero({required this.feature});
-
-  final DonorHomeFeature feature;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 76,
-            height: 76,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFECEE),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(feature.icon, color: AppColors.bloodRed, size: 38),
-          ),
-          const SizedBox(height: 18),
-          Text(
-            feature.title,
-            style: const TextStyle(
-              color: Color(0xFF171D24),
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            feature.description,
-            style: const TextStyle(
-              color: Color(0xFF5D6673),
-              fontSize: 14,
-              height: 1.45,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _InfoTile extends StatelessWidget {
   const _InfoTile({required this.text});
 
