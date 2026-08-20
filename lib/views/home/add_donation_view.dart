@@ -73,21 +73,9 @@ class _AddDonationViewState extends State<AddDonationView> {
       if (!mounted) return;
       await showDialog<void>(
         context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          title: const Text('Donation saved'),
-          content: const Text('Your donation record was saved successfully.'),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.pop(context),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.bloodRed,
-              ),
-              child: const Text('OK'),
-            ),
-          ],
+        builder: (context) => _DonationSavedDialog(
+          dateText: _dateFormat.format(_donationDate!),
+          patientCount: _patientCount,
         ),
       );
 
@@ -390,6 +378,112 @@ class _PatientChoice extends StatelessWidget {
             fontSize: 18,
             fontWeight: FontWeight.w900,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DonationSavedDialog extends StatelessWidget {
+  const _DonationSavedDialog({
+    required this.dateText,
+    required this.patientCount,
+  });
+
+  final String dateText;
+  final int patientCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(22, 24, 22, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFECEE),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.lightRed.withValues(alpha: 0.9),
+                ),
+              ),
+              child: const Icon(
+                Icons.volunteer_activism_rounded,
+                color: AppColors.bloodRed,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Thank you, life saver!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF171D24),
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Your donation has been saved successfully. Your kindness can help $patientCount patient${patientCount == 1 ? '' : 's'}.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFF5D6673),
+                fontSize: 13,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFBFB),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFFFE6E8)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_month_rounded,
+                    color: AppColors.bloodRed,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      dateText,
+                      style: const TextStyle(
+                        color: Color(0xFF171D24),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            FilledButton(
+              onPressed: () => Navigator.pop(context),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.bloodRed,
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text('Done'),
+            ),
+          ],
         ),
       ),
     );
