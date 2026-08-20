@@ -71,6 +71,8 @@ class DonorCreateAccountView extends StatelessWidget {
                             emailController: viewModel.donorEmailController,
                             passwordController:
                                 viewModel.donorPasswordController,
+                            confirmPasswordController:
+                                viewModel.donorConfirmPasswordController,
                             compact: compact,
                           ),
                           SizedBox(height: compact ? 8 : 12),
@@ -201,11 +203,13 @@ class _AuthFields extends StatelessWidget {
   const _AuthFields({
     required this.emailController,
     required this.passwordController,
+    required this.confirmPasswordController,
     required this.compact,
   });
 
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
   final bool compact;
 
   @override
@@ -223,8 +227,18 @@ class _AuthFields extends StatelessWidget {
         SizedBox(height: compact ? 10 : 14),
         _AuthField(
           controller: passwordController,
-          hint: 'Password',
+          hint: 'Enter Password',
           icon: Icons.lock_outline_rounded,
+          obscureText: true,
+          suffixIcon: Icons.visibility_off_outlined,
+          compact: compact,
+        ),
+        SizedBox(height: compact ? 10 : 14),
+        _AuthField(
+          controller: confirmPasswordController,
+          hint: 'Confirm Password',
+          icon: Icons.lock_outline_rounded,
+          textInputAction: TextInputAction.done,
           obscureText: true,
           suffixIcon: Icons.visibility_off_outlined,
           compact: compact,
