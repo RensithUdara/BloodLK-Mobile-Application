@@ -15,7 +15,7 @@ class DonorHomeHeader extends StatelessWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return SizedBox(
-      height: compact ? 132 : 158,
+      height: compact ? 144 : 166,
       child: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _HomeHeaderPainter())),
@@ -24,7 +24,7 @@ class DonorHomeHeader extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.fromLTRB(
                 compact ? 20 : 24,
-                compact ? 12 : 18,
+                compact ? 10 : 18,
                 compact ? 20 : 24,
                 0,
               ),
@@ -242,7 +242,7 @@ class _AvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 58.0 : 68.0;
+    final size = compact ? 56.0 : 66.0;
     return Container(
       width: size,
       height: size,
@@ -251,7 +251,7 @@ class _AvatarBadge extends StatelessWidget {
       child: Icon(
         Icons.person_rounded,
         color: AppColors.bloodRed,
-        size: compact ? 38 : 45,
+        size: compact ? 37 : 44,
       ),
     );
   }
@@ -378,22 +378,22 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final darkWave = Path()
-      ..moveTo(0, size.height * 0.72)
+      ..moveTo(0, size.height * 0.78)
       ..cubicTo(
         size.width * 0.25,
-        size.height * 0.66,
-        size.width * 0.48,
         size.height * 0.72,
+        size.width * 0.48,
+        size.height * 0.78,
         size.width * 0.72,
-        size.height * 0.7,
+        size.height * 0.76,
       )
       ..cubicTo(
         size.width * 0.86,
-        size.height * 0.69,
+        size.height * 0.75,
         size.width * 0.93,
-        size.height * 0.76,
+        size.height * 0.82,
         size.width,
-        size.height * 0.7,
+        size.height * 0.76,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
@@ -405,22 +405,22 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final whiteWave = Path()
-      ..moveTo(0, size.height * 0.8)
+      ..moveTo(0, size.height * 0.87)
       ..cubicTo(
         size.width * 0.18,
-        size.height * 0.74,
+        size.height * 0.81,
         size.width * 0.44,
-        size.height * 0.8,
+        size.height * 0.87,
         size.width * 0.64,
-        size.height * 0.85,
+        size.height * 0.92,
       )
       ..cubicTo(
         size.width * 0.82,
-        size.height * 0.91,
+        size.height * 0.98,
         size.width * 0.94,
-        size.height * 0.86,
+        size.height * 0.93,
         size.width,
-        size.height * 0.81,
+        size.height * 0.88,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
