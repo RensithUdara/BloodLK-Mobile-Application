@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../../app/app_routes.dart';
 import '../../core/constants/app_constants.dart';
+import '../../widgets/custom_app_dialog.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -108,21 +109,15 @@ class _SettingsViewState extends State<SettingsView> {
   Future<void> _signOut() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign out?'),
-        content: const Text(
-            'You will need to sign in again to use your donor account.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: AppColors.bloodRed),
-            child: const Text('Sign out'),
-          ),
-        ],
+      builder: (context) => CustomAppDialog(
+        icon: Icons.logout_rounded,
+        title: 'Sign out?',
+        message: 'You will need to sign in again to use your donor account.',
+        primaryText: 'Sign out',
+        secondaryText: 'Cancel',
+        destructive: true,
+        onPrimary: () => Navigator.pop(context, true),
+        onSecondary: () => Navigator.pop(context, false),
       ),
     );
 
@@ -323,18 +318,13 @@ class _SettingsViewState extends State<SettingsView> {
   void _showPrivacyNote() {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Privacy note'),
-        content: const Text(
-          'BloodLK uses your donor details to help match urgent blood requests. Your phone number and city help requesters contact suitable donors quickly. You can change visibility preferences here.',
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(context),
-            style: FilledButton.styleFrom(backgroundColor: AppColors.bloodRed),
-            child: const Text('OK'),
-          ),
-        ],
+      builder: (context) => CustomAppDialog(
+        icon: Icons.privacy_tip_rounded,
+        title: 'Privacy note',
+        message:
+            'BloodLK uses your donor details to help match urgent blood requests. Your phone number and city help requesters contact suitable donors quickly. You can change visibility preferences here.',
+        primaryText: 'OK',
+        onPrimary: () => Navigator.pop(context),
       ),
     );
   }
