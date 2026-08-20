@@ -23,10 +23,6 @@ class DonorFeatureDetailView extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                     children: [
-                      if (feature.faqs.isEmpty) ...[
-                        _FeatureHero(feature: feature),
-                        const SizedBox(height: 18),
-                      ],
                       if (feature.faqs.isNotEmpty)
                         ...feature.faqs.map(
                           (faq) => Padding(
