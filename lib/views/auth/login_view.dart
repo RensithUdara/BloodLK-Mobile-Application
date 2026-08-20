@@ -16,7 +16,7 @@ class LoginView extends StatelessWidget {
       Navigator.pushReplacementNamed(
         context,
         destination == LoginDestination.donorSearch
-            ? AppRoutes.donorSearch
+            ? AppRoutes.home
             : AppRoutes.donorRegistration,
       );
     } catch (error) {
