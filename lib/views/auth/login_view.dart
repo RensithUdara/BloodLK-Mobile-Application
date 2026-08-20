@@ -311,7 +311,7 @@ class _DonorAuthFields extends StatelessWidget {
   }
 }
 
-class _LoginAuthField extends StatelessWidget {
+class _LoginAuthField extends StatefulWidget {
   const _LoginAuthField({
     required this.controller,
     required this.hint,
@@ -333,7 +333,22 @@ class _LoginAuthField extends StatelessWidget {
   final IconData? suffixIcon;
 
   @override
+  State<_LoginAuthField> createState() => _LoginAuthFieldState();
+}
+
+class _LoginAuthFieldState extends State<_LoginAuthField> {
+  late bool _obscureText = widget.obscureText;
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final compact = widget.compact;
+
     return Container(
       height: compact ? 58 : 64,
       decoration: BoxDecoration(
@@ -349,10 +364,10 @@ class _LoginAuthField extends StatelessWidget {
         ],
       ),
       child: TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        textInputAction: textInputAction,
-        obscureText: obscureText,
+        controller: widget.controller,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        obscureText: _obscureText,
         style: TextStyle(
           color: const Color(0xFF17232B),
           fontSize: compact ? 14 : 16,
@@ -360,7 +375,7 @@ class _LoginAuthField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: hint,
+          hintText: widget.hint,
           hintStyle: TextStyle(
             color: const Color(0xFF6F7177),
             fontSize: compact ? 14 : 16,
@@ -381,15 +396,24 @@ class _LoginAuthField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(
-                icon,
+                widget.icon,
                 color: AppColors.bloodRed,
                 size: compact ? 21 : 23,
               ),
             ),
           ),
-          suffixIcon: suffixIcon == null
+          suffixIcon: widget.suffixIcon == null
               ? null
-              : Icon(suffixIcon, color: const Color(0xFF6F7177), size: 22),
+              : IconButton(
+                  onPressed: _togglePasswordVisibility,
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: const Color(0xFF6F7177),
+                    size: 22,
+                  ),
+                ),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 4,
             vertical: compact ? 18 : 21,
