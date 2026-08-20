@@ -61,14 +61,14 @@ class _SplashViewState extends State<SplashView>
                   final compact = constraints.maxHeight < 720;
                   return Padding(
                     padding: EdgeInsets.fromLTRB(
-                      28,
-                      compact ? 28 : 48,
-                      28,
-                      compact ? 24 : 36,
+                      24,
+                      compact ? 18 : 34,
+                      24,
+                      compact ? 18 : 28,
                     ),
                     child: Column(
                       children: [
-                        const Spacer(flex: 2),
+                        const Spacer(),
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: ScaleTransition(
@@ -76,18 +76,18 @@ class _SplashViewState extends State<SplashView>
                             child: Column(
                               children: [
                                 _LogoGlow(compact: compact),
-                                SizedBox(height: compact ? 22 : 30),
-                                const _BrandMark(),
+                                SizedBox(height: compact ? 14 : 22),
+                                _BrandMark(compact: compact),
                               ],
                             ),
                           ),
                         ),
-                        const Spacer(flex: 2),
+                        const Spacer(),
                         FadeTransition(
                           opacity: _fadeAnimation,
                           child: _FeatureRow(compact: compact),
                         ),
-                        const Spacer(flex: 3),
+                        const Spacer(flex: 4),
                       ],
                     ),
                   );
@@ -108,8 +108,8 @@ class _LogoGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final outerSize = compact ? 210.0 : 260.0;
-    final innerSize = compact ? 152.0 : 184.0;
+    final outerSize = compact ? 184.0 : 230.0;
+    final innerSize = compact ? 132.0 : 164.0;
 
     return SizedBox(
       width: outerSize,
@@ -159,33 +159,35 @@ class _LogoGlow extends StatelessWidget {
 }
 
 class _BrandMark extends StatelessWidget {
-  const _BrandMark();
+  const _BrandMark({required this.compact});
+
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             style: TextStyle(
-              fontSize: 50,
+              fontSize: compact ? 38 : 46,
               height: 1,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF17232B),
+              color: const Color(0xFF17232B),
             ),
-            children: [
+            children: const [
               TextSpan(text: 'Blood'),
               TextSpan(text: 'LK', style: TextStyle(color: AppColors.bloodRed)),
             ],
           ),
         ),
-        const SizedBox(height: 14),
-        const Text(
+        SizedBox(height: compact ? 8 : 12),
+        Text(
           'Donate Blood  .  Save Lives',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Color(0xFF70767C),
-            fontSize: 18,
+            color: const Color(0xFF70767C),
+            fontSize: compact ? 14 : 17,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -239,14 +241,14 @@ class _SplashFeature extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Colors.white, size: 48),
-        const SizedBox(height: 16),
+        Icon(icon, color: Colors.white, size: 40),
+        const SizedBox(height: 10),
         Text(
           label,
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 15,
             height: 1.18,
             fontWeight: FontWeight.w600,
           ),
@@ -265,7 +267,7 @@ class _FeatureDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 1,
-      height: compact ? 82 : 104,
+      height: compact ? 68 : 86,
       color: Colors.white.withValues(alpha: 0.42),
     );
   }
