@@ -73,7 +73,7 @@ class _SearchHeader extends StatelessWidget {
                     'Find Blood Donors',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 24,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -82,7 +82,7 @@ class _SearchHeader extends StatelessWidget {
                     'Search and connect with donors\nin your area.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 12,
+                      fontSize: 13,
                       height: 1.35,
                       fontWeight: FontWeight.w500,
                     ),
