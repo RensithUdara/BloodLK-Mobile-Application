@@ -12,6 +12,7 @@ class LoginViewModel extends ChangeNotifier {
 
   final donorEmailController = TextEditingController();
   final donorPasswordController = TextEditingController();
+  final donorConfirmPasswordController = TextEditingController();
   final adminEmailController = TextEditingController();
   final adminPasswordController = TextEditingController();
 
@@ -38,11 +39,18 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<LoginDestination> createDonorAccount() async {
+    final password = donorPasswordController.text.trim();
+    final confirmPassword = donorConfirmPasswordController.text.trim();
+
+    if (password != confirmPassword) {
+      throw Exception('Passwords do not match');
+    }
+
     _setLoading(true);
     try {
       await _authRepository.createDonorAccount(
         email: donorEmailController.text.trim(),
-        password: donorPasswordController.text.trim(),
+        password: password,
       );
       return LoginDestination.donorRegistration;
     } on FirebaseAuthException catch (error) {
@@ -99,6 +107,7 @@ class LoginViewModel extends ChangeNotifier {
   void dispose() {
     donorEmailController.dispose();
     donorPasswordController.dispose();
+    donorConfirmPasswordController.dispose();
     adminEmailController.dispose();
     adminPasswordController.dispose();
     super.dispose();
