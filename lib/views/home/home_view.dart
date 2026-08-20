@@ -4,6 +4,7 @@ import '../../data/models/donor.dart';
 import '../../data/repositories/donor_repository.dart';
 import '../../viewmodels/donor_search_view_model.dart';
 import '../donor/donor_search_view.dart';
+import 'achievements_view.dart';
 import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
 import 'home_dashboard_widgets.dart';
@@ -120,6 +121,10 @@ class _HomeViewState extends State<HomeView> {
       _openSettings();
       return;
     }
+    if (feature.title == 'Achievements') {
+      _openAchievements();
+      return;
+    }
 
     Navigator.push(
       context,
@@ -169,6 +174,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const SettingsView()),
+    );
+  }
+
+  void _openAchievements() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => AchievementsView()),
     );
   }
 }
