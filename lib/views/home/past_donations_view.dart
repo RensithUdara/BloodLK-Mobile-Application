@@ -14,56 +14,63 @@ class PastDonationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const _PastDonationsAppBar(),
-            Expanded(
-              child: StreamBuilder<List<DonationRecord>>(
-                stream: _repository.watchCurrentDonations(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.bloodRed,
-                      ),
-                    );
-                  }
+      body: Stack(
+        children: [
+          Positioned.fill(
+              child: CustomPaint(painter: _PastDonationsBackdrop())),
+          SafeArea(
+            child: Column(
+              children: [
+                const _PastDonationsAppBar(),
+                Expanded(
+                  child: StreamBuilder<List<DonationRecord>>(
+                    stream: _repository.watchCurrentDonations(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.bloodRed,
+                          ),
+                        );
+                      }
 
-                  if (snapshot.hasError) {
-                    return _StateMessage(
-                      icon: Icons.error_outline_rounded,
-                      title: 'Could not load donations',
-                      message: snapshot.error.toString(),
-                    );
-                  }
+                      if (snapshot.hasError) {
+                        return _StateMessage(
+                          icon: Icons.error_outline_rounded,
+                          title: 'Could not load donations',
+                          message: snapshot.error.toString(),
+                        );
+                      }
 
-                  final donations = snapshot.data ?? const <DonationRecord>[];
-                  if (donations.isEmpty) {
-                    return const _StateMessage(
-                      icon: Icons.bloodtype_rounded,
-                      title: 'No donations yet',
-                      message: 'Saved donations will appear here.',
-                    );
-                  }
+                      final donations =
+                          snapshot.data ?? const <DonationRecord>[];
+                      if (donations.isEmpty) {
+                        return const _StateMessage(
+                          icon: Icons.bloodtype_rounded,
+                          title: 'No donations yet',
+                          message: 'Saved donations will appear here.',
+                        );
+                      }
 
-                  return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                    itemCount: donations.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final donation = donations[index];
-                      return _DonationTile(
-                        donation: donation,
-                        dateText: _dateFormat.format(donation.donationDate),
+                      return ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                        itemCount: donations.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final donation = donations[index];
+                          return _DonationTile(
+                            donation: donation,
+                            dateText: _dateFormat.format(donation.donationDate),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -74,15 +81,8 @@ class _PastDonationsAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 10, 18, 14),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFE71920), Color(0xFFC9000B)],
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 10, 18, 8),
       child: Row(
         children: [
           IconButton.filled(
@@ -102,7 +102,7 @@ class _PastDonationsAppBar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -111,6 +111,36 @@ class _PastDonationsAppBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PastDonationsBackdrop extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = Colors.white);
+
+    final rect = Rect.fromLTWH(0, 0, size.width, 170);
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE71920), Color(0xFFC9000B)],
+        ).createShader(rect),
+    );
+
+    final wave = Path()
+      ..moveTo(0, 128)
+      ..cubicTo(size.width * 0.18, 100, size.width * 0.42, 150, size.width, 116)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(wave, Paint()..color = Colors.white);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _DonationTile extends StatelessWidget {
