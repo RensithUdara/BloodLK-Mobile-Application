@@ -73,16 +73,16 @@ class _SearchHeader extends StatelessWidget {
                     'Find Blood Donors',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 19,
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Text(
                     'Search and connect with donors\nin your area.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 10,
+                      fontSize: 10.8,
                       height: 1.35,
                       fontWeight: FontWeight.w500,
                     ),
@@ -90,7 +90,7 @@ class _SearchHeader extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 2),
             const _HeaderBloodDrop(),
           ],
         ),
@@ -105,22 +105,22 @@ class _HeaderBloodDrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 92,
-      height: 96,
+      width: 108,
+      height: 112,
       child: Stack(
         alignment: Alignment.center,
         children: [
           CustomPaint(
-            size: const Size(66, 84),
+            size: const Size(82, 104),
             painter: _BloodDropPainter(
-              fillColor: Colors.white.withValues(alpha: 0.04),
+              fillColor: Colors.white.withValues(alpha: 0.05),
               strokeColor: Colors.white,
-              glowColor: Colors.white.withValues(alpha: 0.35),
+              glowColor: Colors.white.withValues(alpha: 0.42),
             ),
           ),
           Container(
-            width: 31,
-            height: 31,
+            width: 39,
+            height: 39,
             decoration: BoxDecoration(
               color: AppColors.bloodRed.withValues(alpha: 0.45),
               shape: BoxShape.circle,
@@ -129,27 +129,27 @@ class _HeaderBloodDrop extends StatelessWidget {
             child: const Icon(
               Icons.monitor_heart_rounded,
               color: Colors.white,
-              size: 19,
+              size: 24,
             ),
           ),
-          const Positioned(left: 8, top: 43, child: _Sparkle(size: 4)),
-          const Positioned(right: 6, bottom: 25, child: _Sparkle(size: 6)),
+          const Positioned(left: 4, top: 48, child: _Sparkle(size: 5)),
+          const Positioned(right: 2, bottom: 28, child: _Sparkle(size: 7)),
           Positioned(
-            left: 15,
-            top: 34,
+            left: 9,
+            top: 38,
             child: Icon(
               Icons.water_drop,
               color: Colors.white.withValues(alpha: 0.35),
-              size: 11,
+              size: 15,
             ),
           ),
           Positioned(
-            right: 12,
-            top: 28,
+            right: 9,
+            top: 30,
             child: Icon(
               Icons.water_drop,
               color: Colors.white.withValues(alpha: 0.3),
-              size: 9,
+              size: 11,
             ),
           ),
         ],
@@ -728,8 +728,8 @@ class _BloodDropPainter extends CustomPainter {
       Paint()
         ..color = glowColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 8
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+        ..strokeWidth = 10
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10),
     );
     canvas.drawPath(path, Paint()..color = fillColor);
     canvas.drawPath(
@@ -737,7 +737,7 @@ class _BloodDropPainter extends CustomPainter {
       Paint()
         ..color = strokeColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.2,
+        ..strokeWidth = 2.4,
     );
   }
 
