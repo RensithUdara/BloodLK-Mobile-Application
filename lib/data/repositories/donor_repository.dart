@@ -34,19 +34,17 @@ class DonorRepository {
     required String bloodGroup,
     required String city,
   }) {
-    final threeMonthsAgo = DateTime.now().subtract(const Duration(days: 90));
+    final fiveMonthsAgo = DateTime.now().subtract(const Duration(days: 150));
 
-    return _donors
-        .where('bloodGroup', isEqualTo: bloodGroup)
-        .where('city', isEqualTo: city.toLowerCase())
-        .where(
-          'lastDonationDate',
-          isLessThanOrEqualTo: Timestamp.fromDate(threeMonthsAgo),
-        )
-        .snapshots()
-        .map(
+    return _donors.where('city', isEqualTo: city.toLowerCase()).snapshots().map(
           (snapshot) => snapshot.docs
               .map((doc) => Donor.fromMap(doc.data()))
+              .where(
+                (donor) =>
+                    donor.bloodGroup == bloodGroup &&
+                    (donor.lastDonationDate == null ||
+                        !donor.lastDonationDate!.isAfter(fiveMonthsAgo)),
+              )
               .toList(growable: false),
         );
   }
