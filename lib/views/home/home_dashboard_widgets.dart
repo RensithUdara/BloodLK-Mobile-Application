@@ -19,7 +19,7 @@ class DonorHomeHeader extends StatelessWidget {
     final compact = MediaQuery.sizeOf(context).width < 390;
 
     return SizedBox(
-      height: compact ? 220 : 270,
+      height: compact ? 198 : 238,
       child: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _HomeHeaderPainter())),
@@ -27,41 +27,52 @@ class DonorHomeHeader extends StatelessWidget {
             bottom: false,
             child: Padding(
               padding: EdgeInsets.fromLTRB(
-                compact ? 16 : 24,
                 compact ? 14 : 24,
-                compact ? 16 : 24,
+                compact ? 18 : 30,
+                compact ? 14 : 24,
                 0,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _AvatarBadge(compact: compact),
-                  SizedBox(width: compact ? 9 : 18),
+                  SizedBox(width: compact ? 10 : 18),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(top: compact ? 6 : 10),
+                      padding: EdgeInsets.only(top: compact ? 2 : 8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Hello, $name',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: compact ? 16 : 22,
-                              fontWeight: FontWeight.w900,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Hello, $name',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: compact ? 15.5 : 21,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '👋',
+                                style: TextStyle(fontSize: compact ? 14 : 20),
+                              ),
+                            ],
                           ),
                           SizedBox(height: compact ? 5 : 7),
                           Text(
                             'Thank you for being a life saver!',
-                            maxLines: compact ? 2 : 1,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.92),
-                              fontSize: compact ? 10 : 13,
-                              height: 1.18,
+                              fontSize: compact ? 9.5 : 13,
+                              height: 1.2,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -80,16 +91,28 @@ class DonorHomeHeader extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 4,
+            left: compact ? 190 : 220,
+            right: compact ? 84 : 120,
+            bottom: compact ? 40 : 42,
             child: IgnorePointer(
-              child: Center(
-                child: Icon(
-                  Icons.favorite_rounded,
-                  color: Colors.red.shade800.withValues(alpha: 0.2),
-                  size: compact ? 54 : 72,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_rounded,
+                    color: Colors.red.shade800.withValues(alpha: 0.34),
+                    size: compact ? 34 : 46,
+                  ),
+                  Positioned(
+                    left: 4,
+                    top: 0,
+                    child: Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.red.shade800.withValues(alpha: 0.22),
+                      size: compact ? 20 : 26,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -332,7 +355,7 @@ class _AvatarBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 54.0 : 78.0;
+    final size = compact ? 58.0 : 78.0;
     return Container(
       width: size,
       height: size,
@@ -341,7 +364,7 @@ class _AvatarBadge extends StatelessWidget {
       child: Icon(
         Icons.person_rounded,
         color: AppColors.bloodRed,
-        size: compact ? 36 : 52,
+        size: compact ? 40 : 52,
       ),
     );
   }
@@ -361,77 +384,74 @@ class _BloodGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: compact ? 104 : 120,
+      width: compact ? 112 : 142,
       padding: EdgeInsets.fromLTRB(
-        compact ? 11 : 13,
-        compact ? 11 : 14,
-        compact ? 11 : 13,
-        compact ? 11 : 14,
+        compact ? 10 : 14,
+        compact ? 10 : 13,
+        compact ? 10 : 14,
+        compact ? 10 : 13,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(compact ? 16 : 20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        color: Colors.white.withValues(alpha: 0.11),
+        borderRadius: BorderRadius.circular(compact ? 17 : 20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.bloodtype_rounded,
-                color: Colors.white,
-                size: compact ? 19 : 28,
+          Container(
+            width: compact ? 34 : 42,
+            height: compact ? 34 : 42,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFFF6A2D), Color(0xFFE71920)],
               ),
-              SizedBox(width: compact ? 6 : 0),
-              if (compact)
-                const Expanded(
-                  child: Text(
-                    'Blood\nGroup',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 8,
-                      height: 1.1,
-                      fontWeight: FontWeight.w600,
-                    ),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.bloodtype_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+          SizedBox(width: compact ? 8 : 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Blood Group',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: compact ? 8.5 : 11,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-            ],
-          ),
-          if (!compact) ...[
-            const SizedBox(height: 8),
-            const Text(
-              'Blood Group',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-          SizedBox(height: compact ? 6 : 2),
-          Text(
-            bloodGroup,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: compact ? 21 : 24,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          SizedBox(height: compact ? 6 : 8),
-          Text(
-            donorId,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: compact ? 8 : 9.5,
-              fontWeight: FontWeight.w500,
+                const SizedBox(height: 2),
+                Text(
+                  bloodGroup,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: compact ? 21 : 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                SizedBox(height: compact ? 5 : 7),
+                Text(
+                  donorId,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: compact ? 7.8 : 9,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -548,14 +568,14 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final darkWave = Path()
-      ..moveTo(0, size.height * 0.7)
+      ..moveTo(0, size.height * 0.66)
       ..cubicTo(
         size.width * 0.23,
-        size.height * 0.62,
+        size.height * 0.58,
         size.width * 0.47,
-        size.height * 0.7,
-        size.width * 0.7,
         size.height * 0.66,
+        size.width * 0.7,
+        size.height * 0.64,
       )
       ..cubicTo(
         size.width * 0.86,
@@ -575,22 +595,22 @@ class _HomeHeaderPainter extends CustomPainter {
     );
 
     final whiteWave = Path()
-      ..moveTo(0, size.height * 0.8)
+      ..moveTo(0, size.height * 0.76)
       ..cubicTo(
         size.width * 0.18,
-        size.height * 0.7,
+        size.height * 0.68,
         size.width * 0.44,
-        size.height * 0.8,
+        size.height * 0.76,
         size.width * 0.64,
-        size.height * 0.84,
+        size.height * 0.82,
       )
       ..cubicTo(
         size.width * 0.82,
-        size.height * 0.9,
+        size.height * 0.88,
         size.width * 0.94,
-        size.height * 0.84,
+        size.height * 0.83,
         size.width,
-        size.height * 0.8,
+        size.height * 0.78,
       )
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
