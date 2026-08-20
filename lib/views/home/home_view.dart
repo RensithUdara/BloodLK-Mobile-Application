@@ -41,7 +41,7 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 108),
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 94),
                     sliver: SliverLayoutBuilder(
                       builder: (context, constraints) {
                         final compact = constraints.crossAxisExtent < 360;
