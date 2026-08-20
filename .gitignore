@@ -1,32 +1,74 @@
-﻿.dart_tool/
+# Flutter / Dart
+.dart_tool/
 .pub/
 .pub-cache/
-build/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
+build/
 
+# Local environment
 .env
+.env.*
+*.local
 
-android/app/build/
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Android generated files
 android/.gradle/
+android/.kotlin/
+android/app/build/
+android/build/
 android/captures/
 android/local.properties
+android/key.properties
+android/.cxx/
+
+# Android signing and release artifacts
 *.apk
 *.aab
+*.ap_
 *.jks
 *.keystore
+*.pem
 
+# Firebase app config
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+
+# iOS / macOS generated files
 ios/Pods/
 ios/.symlinks/
 ios/Flutter/Flutter.framework
 ios/Flutter/Flutter.podspec
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+macos/Pods/
+macos/Flutter/ephemeral/
+macos/Flutter/GeneratedPluginRegistrant.swift
 
-.idea/
-*.iml
-.vscode/
+# Linux / Windows generated files
+linux/flutter/ephemeral/
+windows/flutter/ephemeral/
 
-android_backup/
-my_new_app/
+# Firebase Functions
+functions/node_modules/
+functions/lib/
+functions/.runtimeconfig.json
+functions/firebase-debug.log
+functions/firestore-debug.log
+functions/ui-debug.log
 
+# Logs and OS files
+*.log
 .DS_Store
 Thumbs.db
+
+# Local backups / scratch folders
+android_backup/
+my_new_app/
