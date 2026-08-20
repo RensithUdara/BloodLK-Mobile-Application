@@ -7,6 +7,7 @@ import '../donor/donor_search_view.dart';
 import 'achievements_view.dart';
 import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
+import 'help_center_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
 import 'settings_view.dart';
@@ -125,6 +126,10 @@ class _HomeViewState extends State<HomeView> {
       _openAchievements();
       return;
     }
+    if (feature.title == 'Help Center') {
+      _openHelpCenter();
+      return;
+    }
 
     Navigator.push(
       context,
@@ -181,6 +186,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => AchievementsView()),
+    );
+  }
+
+  void _openHelpCenter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HelpCenterView()),
     );
   }
 }
