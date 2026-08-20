@@ -15,7 +15,9 @@ class DonorSearchView extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          const Positioned.fill(child: _SearchBackdrop()),
+          Positioned.fill(
+            child: CustomPaint(painter: const _SearchBackdrop()),
+          ),
           SafeArea(
             bottom: false,
             child: Column(
@@ -54,10 +56,12 @@ class _SearchHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 380;
+
     return SizedBox(
-      height: 168,
+      height: 140,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 30, 22, 0),
+        padding: EdgeInsets.fromLTRB(20, compact ? 32 : 36, 12, 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,29 +69,28 @@ class _SearchHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 8),
                   const Text(
                     'Find Blood Donors',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 19,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
                     'Search and connect with donors\nin your area.',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 12,
-                      height: 1.45,
+                      fontSize: 10,
+                      height: 1.35,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 4),
             const _HeaderBloodDrop(),
           ],
         ),
@@ -102,13 +105,13 @@ class _HeaderBloodDrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 108,
-      height: 108,
+      width: 92,
+      height: 96,
       child: Stack(
         alignment: Alignment.center,
         children: [
           CustomPaint(
-            size: const Size(88, 104),
+            size: const Size(66, 84),
             painter: _BloodDropPainter(
               fillColor: Colors.white.withValues(alpha: 0.04),
               strokeColor: Colors.white,
@@ -116,8 +119,8 @@ class _HeaderBloodDrop extends StatelessWidget {
             ),
           ),
           Container(
-            width: 38,
-            height: 38,
+            width: 31,
+            height: 31,
             decoration: BoxDecoration(
               color: AppColors.bloodRed.withValues(alpha: 0.45),
               shape: BoxShape.circle,
@@ -126,27 +129,27 @@ class _HeaderBloodDrop extends StatelessWidget {
             child: const Icon(
               Icons.monitor_heart_rounded,
               color: Colors.white,
-              size: 23,
+              size: 19,
             ),
           ),
-          const Positioned(left: 1, top: 42, child: _Sparkle(size: 5)),
-          const Positioned(right: 1, bottom: 24, child: _Sparkle(size: 7)),
+          const Positioned(left: 8, top: 43, child: _Sparkle(size: 4)),
+          const Positioned(right: 6, bottom: 25, child: _Sparkle(size: 6)),
           Positioned(
-            left: 8,
-            top: 28,
+            left: 15,
+            top: 34,
             child: Icon(
               Icons.water_drop,
               color: Colors.white.withValues(alpha: 0.35),
-              size: 15,
+              size: 11,
             ),
           ),
           Positioned(
-            right: 10,
-            top: 22,
+            right: 12,
+            top: 28,
             child: Icon(
               Icons.water_drop,
               color: Colors.white.withValues(alpha: 0.3),
-              size: 11,
+              size: 9,
             ),
           ),
         ],
