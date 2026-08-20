@@ -198,12 +198,15 @@ class DonorHomeBottomNav extends StatelessWidget {
             onTap: () => onTap(0),
           ),
           _NavItem(
-            icon: Icons.groups_rounded,
-            label: 'Donors',
+            icon: Icons.local_hospital_rounded,
+            label: 'Centers',
             selected: currentIndex == 1,
             onTap: () => onTap(1),
           ),
-          _RequestNavItem(selected: currentIndex == 2, onTap: () => onTap(2)),
+          _AddDonationNavItem(
+            selected: currentIndex == 2,
+            onTap: () => onTap(2),
+          ),
           _NavItem(
             icon: Icons.calendar_month_rounded,
             label: 'Appointments',
@@ -291,8 +294,8 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _RequestNavItem extends StatelessWidget {
-  const _RequestNavItem({required this.selected, required this.onTap});
+class _AddDonationNavItem extends StatelessWidget {
+  const _AddDonationNavItem({required this.selected, required this.onTap});
 
   final bool selected;
   final VoidCallback onTap;
@@ -332,7 +335,7 @@ class _RequestNavItem extends StatelessWidget {
               ),
               const SizedBox(height: 1),
               Text(
-                'Request',
+                'Add',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
