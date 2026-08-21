@@ -42,7 +42,7 @@ class AdminPanelView extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFFF7F7),
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: _AdminHomeBackdrop())),
@@ -51,14 +51,14 @@ class AdminPanelView extends StatelessWidget {
               slivers: [
                 const SliverToBoxAdapter(child: _AdminHomeHeader()),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 11,
-                      childAspectRatio: 1.02,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.98,
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) =>
@@ -107,55 +107,65 @@ class _AdminHomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 144,
+      height: 120,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-        child: Row(
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.admin_panel_settings_rounded,
-                color: AppColors.bloodRed,
-                size: 36,
-              ),
-            ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admin Panel',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 21,
-                      fontWeight: FontWeight.w900,
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 10),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.10),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
                     ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Manage requests, donors, and alerts',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
+                child: const Icon(
+                  Icons.admin_panel_settings_rounded,
+                  color: AppColors.bloodRed,
+                  size: 34,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Admin Panel',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Manage donor app operations',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xFFFFECEE),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -178,14 +188,14 @@ class _AdminHomeTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBFB),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFFFE6E8)),
+            border: Border.all(color: const Color(0xFFFFDEDE)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.035),
-                blurRadius: 12,
-                offset: const Offset(0, 5),
+                color: AppColors.bloodRed.withValues(alpha: 0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 7),
               ),
             ],
           ),
@@ -210,7 +220,7 @@ class _AdminHomeTile extends StatelessWidget {
                 style: const TextStyle(
                   color: Color(0xFF171D24),
                   fontSize: 12.5,
-                  height: 1.04,
+                  height: 1.06,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -225,9 +235,12 @@ class _AdminHomeTile extends StatelessWidget {
 class _AdminHomeBackdrop extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = Colors.white);
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFFFF7F7),
+    );
 
-    final rect = Offset.zero & Size(size.width, 144);
+    final rect = Offset.zero & Size(size.width, 124);
     canvas.drawRect(
       rect,
       Paint()
@@ -239,13 +252,13 @@ class _AdminHomeBackdrop extends CustomPainter {
     );
 
     final wave = Path()
-      ..moveTo(0, 112)
-      ..cubicTo(size.width * 0.18, 92, size.width * 0.46, 128, size.width, 104)
+      ..moveTo(0, 92)
+      ..cubicTo(size.width * 0.20, 72, size.width * 0.48, 112, size.width, 82)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
 
-    canvas.drawPath(wave, Paint()..color = Colors.white);
+    canvas.drawPath(wave, Paint()..color = const Color(0xFFFFF7F7));
   }
 
   @override
