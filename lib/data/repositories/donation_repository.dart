@@ -19,6 +19,15 @@ class DonationRepository {
     return _donorDoc(uid).collection('donations');
   }
 
+  Stream<int> watchTotalDonationUnits() {
+    return _firestore.collectionGroup('donations').snapshots().map((snapshot) {
+      return snapshot.docs.fold<int>(0, (total, doc) {
+        final record = DonationRecord.fromMap(doc.id, doc.data());
+        return total + record.patientCount;
+      });
+    });
+  }
+
   Future<void> saveDonation(DonationRecord donation) async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) {
