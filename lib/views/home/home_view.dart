@@ -47,7 +47,12 @@ class _HomeViewState extends State<HomeView> {
                     child: DonorHomeBannerCarousel(),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 2, 16, 94),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      2,
+                      16,
+                      compact ? 138 : 150,
+                    ),
                     sliver: SliverLayoutBuilder(
                       builder: (context, constraints) {
                         final compact = constraints.crossAxisExtent < 360;
