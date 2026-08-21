@@ -33,6 +33,8 @@ class LoginViewModel extends ChangeNotifier {
           : LoginDestination.donorRegistration;
     } on FirebaseAuthException catch (error) {
       throw Exception(_donorMessageFor(error));
+    } catch (error) {
+      throw Exception(error.toString().replaceFirst('Exception: ', ''));
     } finally {
       _setLoading(false);
     }
@@ -55,6 +57,8 @@ class LoginViewModel extends ChangeNotifier {
       return LoginDestination.donorRegistration;
     } on FirebaseAuthException catch (error) {
       throw Exception(_donorMessageFor(error));
+    } catch (error) {
+      throw Exception(error.toString().replaceFirst('Exception: ', ''));
     } finally {
       _setLoading(false);
     }
@@ -70,6 +74,8 @@ class LoginViewModel extends ChangeNotifier {
       return LoginDestination.adminPanel;
     } on FirebaseAuthException catch (error) {
       throw Exception(_adminMessageFor(error));
+    } catch (error) {
+      throw Exception(error.toString().replaceFirst('Exception: ', ''));
     } finally {
       _setLoading(false);
     }
