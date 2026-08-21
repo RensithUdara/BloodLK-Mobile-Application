@@ -125,7 +125,8 @@ class _DonationCentersViewState extends State<DonationCentersView> {
                         );
                       }
 
-                      final centers = (snapshot.data ?? const <DonationCenter>[])
+                      final centers = (snapshot.data ??
+                              const <DonationCenter>[])
                           .where((center) =>
                               center.matchesSearch(_searchController.text) &&
                               center.matchesDistrict(_selectedDistrict))
@@ -262,9 +263,8 @@ class _DonationCenterCard extends StatelessWidget {
             onPressed: onCall,
             icon: const Icon(Icons.call_rounded),
             style: IconButton.styleFrom(
-              backgroundColor: onCall == null
-                  ? const Color(0xFFE9ECEF)
-                  : AppColors.bloodRed,
+              backgroundColor:
+                  onCall == null ? const Color(0xFFE9ECEF) : AppColors.bloodRed,
               foregroundColor:
                   onCall == null ? const Color(0xFF8A9099) : Colors.white,
             ),
