@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
+import '../../viewmodels/admin_view_model.dart';
 import '../home/donation_centers_view.dart';
 import 'admin_donors_view.dart';
 import 'admin_emergency_requests_view.dart';
@@ -74,7 +76,16 @@ class AdminPanelView extends StatelessWidget {
   }
 
   void _open(BuildContext context, Widget view) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => view));
+    final adminViewModel = context.read<AdminViewModel>();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider<AdminViewModel>.value(
+          value: adminViewModel,
+          child: view,
+        ),
+      ),
+    );
   }
 }
 
