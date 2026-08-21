@@ -10,6 +10,13 @@ class DonationCenterRepository {
   CollectionReference<Map<String, dynamic>> get _centers =>
       _firestore.collection('donation_center');
 
+  Future<void> saveCenter(DonationCenter center) {
+    return _centers.add({
+      ...center.toMap(),
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   Stream<List<DonationCenter>> watchCenters() {
     return _centers.snapshots().map((snapshot) {
       final centers = snapshot.docs
