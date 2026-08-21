@@ -33,15 +33,15 @@ class _HomeViewState extends State<HomeView> {
         stream: _donorRepository.watchCurrentDonor(),
         builder: (context, snapshot) {
           final donor = snapshot.data;
+          final compact = MediaQuery.sizeOf(context).width < 390;
+          final headerHeight = compact ? 144.0 : 166.0;
 
           return Stack(
             children: [
               CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
-                    child: DonorHomeHeader(
-                      name: _firstName(donor),
-                    ),
+                    child: SizedBox(height: headerHeight),
                   ),
                   const SliverToBoxAdapter(
                     child: DonorHomeBannerCarousel(),
@@ -74,6 +74,14 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                 ],
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: DonorHomeHeader(
+                  name: _firstName(donor),
+                ),
               ),
               Positioned(
                 left: 0,
