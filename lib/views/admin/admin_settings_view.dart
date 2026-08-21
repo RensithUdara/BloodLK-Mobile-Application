@@ -124,7 +124,6 @@ class _AdminSettingsViewState extends State<AdminSettingsView> {
         message: 'You will leave the admin panel and return to login.',
         primaryText: 'Sign Out',
         secondaryText: 'Cancel',
-        destructive: true,
         onPrimary: () => Navigator.pop(context, true),
         onSecondary: () => Navigator.pop(context, false),
       ),
