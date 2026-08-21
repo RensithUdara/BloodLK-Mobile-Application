@@ -23,55 +23,46 @@ class AdminPanelView extends StatelessWidget {
     final actions = [
       _AdminHomeAction(
         title: 'Post Request',
-        subtitle: 'Create blood request',
         icon: Icons.add_rounded,
         onTap: () => _open(context, const AdminPostRequestView()),
       ),
       _AdminHomeAction(
         title: 'Requests',
-        subtitle: 'View all requests',
         icon: Icons.emergency_share_rounded,
         onTap: () => _open(context, const AdminEmergencyRequestsView()),
       ),
       _AdminHomeAction(
         title: 'Donors',
-        subtitle: 'Manage donors',
         icon: Icons.groups_rounded,
         onTap: () => _open(context, const AdminDonorsView()),
       ),
       _AdminHomeAction(
         title: 'Group Alerts',
-        subtitle: 'Send alerts to groups',
         icon: Icons.notifications_active_rounded,
         onTap: () => _open(context, const AdminGroupNotificationsView()),
       ),
       _AdminHomeAction(
         title: 'Donation Centers',
-        subtitle: 'Manage centers',
         icon: Icons.local_hospital_rounded,
         onTap: () => _open(context, const AdminDonationCentersView()),
       ),
       _AdminHomeAction(
         title: 'Eligibility',
-        subtitle: 'Manage eligibility',
         icon: Icons.event_available_rounded,
         onTap: () => _open(context, const AdminEligibilityView()),
       ),
       _AdminHomeAction(
         title: 'Blood Summary',
-        subtitle: 'View blood inventory',
         icon: Icons.bloodtype_rounded,
         onTap: () => _open(context, const AdminBloodSummaryView()),
       ),
       _AdminHomeAction(
         title: 'Settings',
-        subtitle: 'App & system settings',
         icon: Icons.settings_rounded,
         onTap: () => _open(context, const AdminSettingsView()),
       ),
       _AdminHomeAction(
         title: 'Help Center',
-        subtitle: 'Support & guides',
         icon: Icons.support_agent_rounded,
         onTap: () => _open(context, const AdminHelpView()),
       ),
@@ -106,7 +97,7 @@ class AdminPanelView extends StatelessWidget {
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.92,
+                      childAspectRatio: 1.0,
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) =>
@@ -169,13 +160,11 @@ class AdminPanelView extends StatelessWidget {
 class _AdminHomeAction {
   const _AdminHomeAction({
     required this.title,
-    required this.subtitle,
     required this.icon,
     required this.onTap,
   });
 
   final String title;
-  final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
 }
@@ -516,7 +505,7 @@ class _AdminActionTile extends StatelessWidget {
         onTap: action.onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -533,13 +522,13 @@ class _AdminActionTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 58,
-                height: 58,
+                width: 56,
+                height: 56,
                 decoration: const BoxDecoration(
                   color: Color(0xFFFFECEE),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(action.icon, color: AppColors.bloodRed, size: 31),
+                child: Icon(action.icon, color: AppColors.bloodRed, size: 29),
               ),
               const SizedBox(height: 10),
               Text(
@@ -552,19 +541,6 @@ class _AdminActionTile extends StatelessWidget {
                   fontSize: 11.5,
                   height: 1.05,
                   fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                action.subtitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF6A7380),
-                  fontSize: 9.8,
-                  height: 1.15,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
