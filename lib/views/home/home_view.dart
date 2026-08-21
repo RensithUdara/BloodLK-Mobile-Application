@@ -8,6 +8,7 @@ import 'donor_profile_view.dart';
 import 'help_center_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
+import 'next_eligibility_view.dart';
 import 'past_donations_view.dart';
 import 'settings_view.dart';
 
@@ -106,6 +107,10 @@ class _HomeViewState extends State<HomeView> {
       _openPastDonations();
       return;
     }
+    if (feature.title == 'Next Eligibility') {
+      _openNextEligibility();
+      return;
+    }
     if (feature.title == 'Settings') {
       _openSettings();
       return;
@@ -174,6 +179,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PastDonationsView()),
+    );
+  }
+
+  void _openNextEligibility() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => NextEligibilityView()),
     );
   }
 
