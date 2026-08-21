@@ -51,7 +51,7 @@ class AdminPanelView extends StatelessWidget {
               slivers: [
                 const SliverToBoxAdapter(child: _AdminHomeHeader()),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
+                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
                   sliver: SliverGrid(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -107,9 +107,9 @@ class _AdminHomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: 146,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 12, 18, 10),
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
         child: Align(
           alignment: Alignment.topLeft,
           child: Row(
@@ -156,7 +156,7 @@ class _AdminHomeHeader extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Color(0xFFFFECEE),
+                        color: Colors.white,
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
                       ),
@@ -240,7 +240,7 @@ class _AdminHomeBackdrop extends CustomPainter {
       Paint()..color = const Color(0xFFFFF7F7),
     );
 
-    final rect = Offset.zero & Size(size.width, 124);
+    final rect = Offset.zero & Size(size.width, 154);
     canvas.drawRect(
       rect,
       Paint()
@@ -252,8 +252,8 @@ class _AdminHomeBackdrop extends CustomPainter {
     );
 
     final wave = Path()
-      ..moveTo(0, 92)
-      ..cubicTo(size.width * 0.20, 72, size.width * 0.48, 112, size.width, 82)
+      ..moveTo(0, 122)
+      ..cubicTo(size.width * 0.20, 102, size.width * 0.48, 142, size.width, 112)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
