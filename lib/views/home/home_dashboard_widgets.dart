@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import 'home_feature_data.dart';
@@ -66,6 +68,109 @@ class DonorHomeHeader extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DonorHomeBannerCarousel extends StatefulWidget {
+  const DonorHomeBannerCarousel({super.key});
+
+  @override
+  State<DonorHomeBannerCarousel> createState() =>
+      _DonorHomeBannerCarouselState();
+}
+
+class _DonorHomeBannerCarouselState extends State<DonorHomeBannerCarousel> {
+  static const _banners = [
+    'assets/banners/banner1.png',
+    'assets/banners/banner2.png',
+    'assets/banners/banner3.png',
+  ];
+
+  final _controller = PageController();
+  Timer? _timer;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || !_controller.hasClients) return;
+
+      final nextIndex = (_currentIndex + 1) % _banners.length;
+      _controller.animateToPage(
+        nextIndex,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 390;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, compact ? 6 : 8, 16, compact ? 10 : 12),
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 7,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: PageView.builder(
+                controller: _controller,
+                onPageChanged: (index) {
+                  setState(() => _currentIndex = index % _banners.length);
+                },
+                itemCount: _banners.length,
+                itemBuilder: (context, index) {
+                  return Image.asset(
+                    _banners[index],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: const Color(0xFFFFECEE),
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.image_not_supported_rounded,
+                          color: AppColors.bloodRed,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_banners.length, (index) {
+              final selected = index == _currentIndex;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                width: selected ? 18 : 6,
+                height: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.bloodRed
+                      : AppColors.bloodRed.withValues(alpha: 0.22),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              );
+            }),
           ),
         ],
       ),
