@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../data/models/donor.dart';
+import '../../data/models/emergency_request.dart';
 import '../../viewmodels/admin_view_model.dart';
+import '../../widgets/custom_app_dialog.dart';
 import '../donor/donor_details_view.dart';
 
 class AdminPanelView extends StatelessWidget {
@@ -54,6 +56,7 @@ class AdminPanelView extends StatelessWidget {
       ),
       body: Column(
         children: [
+          const _EmergencyRequestForm(),
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 14, 16, 6),
             child: Align(
@@ -173,6 +176,218 @@ class AdminPanelView extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EmergencyRequestForm extends StatefulWidget {
+  const _EmergencyRequestForm();
+
+  @override
+  State<_EmergencyRequestForm> createState() => _EmergencyRequestFormState();
+}
+
+class _EmergencyRequestFormState extends State<_EmergencyRequestForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _patientController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _contactController = TextEditingController();
+  final _noteController = TextEditingController();
+
+  String _bloodGroup = AppConstants.bloodGroups.first;
+  bool _isPosting = false;
+
+  @override
+  void dispose() {
+    _patientController.dispose();
+    _locationController.dispose();
+    _contactController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _postRequest() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => _isPosting = true);
+    try {
+      await context.read<AdminViewModel>().postEmergencyRequest(
+            EmergencyRequest(
+              bloodGroup: _bloodGroup,
+              patientName: _patientController.text,
+              location: _locationController.text,
+              contactNumber: _contactController.text,
+              note: _noteController.text,
+              createdAt: DateTime.now(),
+            ),
+          );
+
+      if (!mounted) return;
+      _patientController.clear();
+      _locationController.clear();
+      _contactController.clear();
+      _noteController.clear();
+
+      await showDialog<void>(
+        context: context,
+        builder: (context) => CustomAppDialog(
+          icon: Icons.emergency_share_rounded,
+          title: 'Request posted',
+          message:
+              'Emergency request for $_bloodGroup blood donors was saved successfully.',
+          primaryText: 'OK',
+          onPrimary: () => Navigator.pop(context),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (context) => CustomAppDialog(
+          icon: Icons.error_outline_rounded,
+          title: 'Unable to post',
+          message: error.toString(),
+          primaryText: 'OK',
+          destructive: true,
+          onPrimary: () => Navigator.pop(context),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isPosting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(14, 14, 14, 4),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.bloodRed.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Post emergency request',
+              style: TextStyle(
+                color: AppColors.textBrown,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _bloodGroup,
+                    decoration: _inputDecoration('Blood group'),
+                    items: AppConstants.bloodGroups
+                        .map(
+                          (group) => DropdownMenuItem(
+                            value: group,
+                            child: Text(group),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() => _bloodGroup = value);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextFormField(
+                    controller: _patientController,
+                    decoration: _inputDecoration('Patient name'),
+                    validator: _required,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _locationController,
+              decoration: _inputDecoration('Hospital or location'),
+              validator: _required,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _contactController,
+              keyboardType: TextInputType.phone,
+              decoration: _inputDecoration('Contact number'),
+              validator: _required,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _noteController,
+              minLines: 2,
+              maxLines: 3,
+              decoration: _inputDecoration('Note'),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: _isPosting ? null : _postRequest,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.bloodRed,
+                minimumSize: const Size(double.infinity, 46),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: _isPosting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.publish_rounded),
+              label: Text(_isPosting ? 'Posting...' : 'Post Request'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String? _required(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Required';
+    return null;
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFFFFAFA),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.lightRed),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.lightRed),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.bloodRed),
       ),
     );
   }
