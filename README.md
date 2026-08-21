@@ -1,79 +1,245 @@
-# BloodLK
+<div align="center">
+  <img src="assets/blood-lk-logo.png" alt="BloodLK logo" width="150" />
 
-BloodLK is a Flutter and Firebase blood donation app for donor registration, donation tracking, emergency blood requests, push notifications, and admin-side donor management.
+  # 🩸 BloodLK
 
-The app has two main experiences:
+  **A Flutter + Firebase blood donor management app for finding eligible donors, registering donors, and sending urgent blood request notifications.**
 
-- Donor app: account creation, donor profile, donation centers, add donations, past donations, eligibility countdown, emergency requests, notifications, settings, FAQ, tips, achievements, help center, and home banners.
-- Admin panel: role-protected admin login, dashboard overview, post emergency requests, manage requests, donors, group alerts, donation centers, eligibility, blood summary, settings, and help center.
+  ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+  ![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+  ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+  ![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)
+</div>
 
-## Tech Stack
+---
 
-| Area | Technology |
+## 📌 Overview
+
+**BloodLK** helps connect blood donors with people who urgently need blood. Donors can create an account, register their details, and receive notifications when their blood group is needed. Admins can view donor records and send targeted blood request notifications by blood type.
+
+The project is built with **Flutter**, uses **Provider** for state management, and connects to **Firebase Authentication**, **Cloud Firestore**, **Firebase Cloud Messaging**, and **Cloud Functions**.
+
+---
+
+## ✨ Features
+
+- 🧑‍💻 **Donor authentication** with Firebase Auth
+- 📝 **Donor registration** with NIC, name, age, phone, city, blood group, and donation date
+- 🩸 **Blood group selection** for A+, A-, B+, B-, O+, O-, AB+, and AB-
+- 🔍 **Eligible donor search** by blood group and city
+- 📞 **One-tap phone calls** to donors
+- 💬 **SMS message support** for urgent donor contact
+- 🛡️ **Admin login** for protected admin access
+- 📋 **Admin donor panel** to view registered donors
+- 🔔 **Push notifications** using Firebase Cloud Messaging
+- 🚨 **Group notifications** for urgent blood requests
+- ⏰ **Scheduled donation reminders** through Firebase Cloud Functions
+- 🎨 **Custom BloodLK theme and logo**
+
+---
+
+## 🧱 Tech Stack
+
+| Layer | Technology |
 | --- | --- |
-| App | Flutter |
-| Language | Dart |
-| State management | Provider |
-| Authentication | Firebase Auth |
-| Database | Cloud Firestore |
-| Push notifications | Firebase Cloud Messaging |
-| Local notifications | flutter_local_notifications |
-| Backend | Firebase Cloud Functions |
-| Phone/SMS actions | url_launcher |
+| 📱 App Framework | Flutter |
+| 💙 Language | Dart |
+| 🔄 State Management | Provider |
+| 🔐 Authentication | Firebase Auth |
+| 🗄️ Database | Cloud Firestore |
+| 🔔 Notifications | Firebase Messaging + Flutter Local Notifications |
+| ⚙️ Backend Jobs | Firebase Cloud Functions |
+| ☎️ Native Actions | url_launcher |
 
-## Main Features
+---
 
-### Donor
+## 📂 Project Structure
 
-- Create donor account with Firebase Auth.
-- Save donor role as `donor`.
-- Register donor profile with NIC, name, age, phone, city, blood group, last donation date, and FCM token.
-- View fixed donor home header with auto-sliding banner carousel.
-- Add donation records with date, patient count, and location.
-- View past donations.
-- Calculate next eligible donation date using a 150-day recovery window.
-- Add eligibility reminder to calendar/device where supported.
-- View emergency requests posted by admins.
-- View notification inbox from Firebase.
-- Search and filter donation centers by district.
-- Manage donor notification settings.
-- Access FAQ, tips, achievements, and help/support.
-
-### Admin
-
-- Admin login is allowed only for users with `users/{uid}.role == "admin"`.
-- Donor or missing-role accounts cannot open the admin panel.
-- Admin dashboard includes overview stats for requests, donors, donation units, and centers.
-- Post emergency blood requests to Firebase.
-- View open emergency requests.
-- Search and filter donor records by text and district.
-- Send Firebase push notifications to one or more selected blood groups.
-- Add and view donation centers.
-- View eligible donors based on the 150-day recovery window.
-- View blood group donor summary.
-- Check push permission, copy FCM token, review Firebase collections, and sign out.
-
-## Role-Based Access
-
-BloodLK uses a `users` collection for app roles.
-
-### Donor user
-
-When a donor account is created or a donor profile is saved, the app writes:
-
-```js
-users/{uid} {
-  email: string,
-  role: "donor",
-  updatedAt: timestamp
-}
+```text
+lib/
+├── app/
+│   ├── app.dart
+│   └── app_routes.dart
+├── core/
+│   ├── config/
+│   │   └── firebase_options.dart
+│   ├── constants/
+│   │   └── app_constants.dart
+│   └── theme/
+│       └── app_theme.dart
+├── data/
+│   ├── models/
+│   │   └── donor.dart
+│   └── repositories/
+│       ├── auth_repository.dart
+│       ├── donor_repository.dart
+│       └── notification_repository.dart
+├── services/
+│   ├── contact_service.dart
+│   └── notification_service.dart
+├── viewmodels/
+│   ├── admin_view_model.dart
+│   ├── donor_registration_view_model.dart
+│   ├── donor_search_view_model.dart
+│   └── login_view_model.dart
+└── views/
+    ├── admin/
+    ├── auth/
+    ├── donor/
+    ├── home/
+    └── splash/
 ```
 
-Donor profile documents also include:
+---
+
+## 🚀 Getting Started
+
+### ✅ Prerequisites
+
+Make sure you have these installed:
+
+- 🐦 Flutter SDK `>=3.0.0`
+- 🎯 Dart SDK `>=3.0.0 <4.0.0`
+- 🔥 Firebase CLI
+- 🟢 Node.js `20` for Firebase Functions
+- 🤖 Android Studio or VS Code
+- 📱 Android emulator, iOS simulator, or physical device
+
+Check your Flutter setup:
+
+```bash
+flutter doctor
+```
+
+---
+
+## 📦 Installation
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd badulla_blood_donation-main
+```
+
+### 2. Install Flutter dependencies
+
+```bash
+flutter pub get
+```
+
+### 3. Install Firebase Functions dependencies
+
+```bash
+cd functions
+npm install
+cd ..
+```
+
+### 4. Configure Firebase
+
+This project is already configured for the Firebase project:
+
+```text
+bloodlk-mobile-app
+```
+
+If you want to connect your own Firebase project, run:
+
+```bash
+firebase login
+flutterfire configure
+```
+
+Then make sure these Firebase products are enabled:
+
+- 🔐 Authentication
+- 🗄️ Cloud Firestore
+- 🔔 Cloud Messaging
+- ⚙️ Cloud Functions
+
+---
+
+## ▶️ Run the App
+
+Run on the selected device:
+
+```bash
+flutter run
+```
+
+Run on Chrome:
+
+```bash
+flutter run -d chrome
+```
+
+Run on Android:
+
+```bash
+flutter run -d android
+```
+
+---
+
+## 🧪 Run Tests
+
+```bash
+flutter test
+```
+
+Analyze the code:
+
+```bash
+flutter analyze
+```
+
+---
+
+## 🔥 Firebase Functions
+
+The backend functions are located in:
+
+```text
+functions/index.js
+```
+
+### Available functions
+
+- ⏰ `scheduledBloodDonationReminder`  
+  Runs every 24 hours and sends reminders to donors whose last donation date is old enough.
+
+- 🚨 `sendGroupNotification`  
+  Callable function used by the admin panel to notify donors of a selected blood group.
+
+### Run Functions locally
+
+```bash
+cd functions
+npm run serve
+```
+
+### Deploy Functions
+
+```bash
+cd functions
+npm run deploy
+```
+
+Or from the project root:
+
+```bash
+firebase deploy --only functions
+```
+
+---
+
+## 🗄️ Firestore Data Model
+
+Donor records are stored in the `donors` collection.
 
 ```js
 donors/{uid} {
-  role: "donor",
   nic: string,
   name: string,
   age: number,
@@ -86,254 +252,99 @@ donors/{uid} {
 }
 ```
 
-### Admin user
+---
 
-To allow an account to access the admin panel, create or update:
+## 🧭 App Flow
 
-```js
-users/{adminUid} {
-  email: "admin@example.com",
-  role: "admin",
-  updatedAt: timestamp
-}
-```
+1. 🩸 User opens the app from the splash screen.
+2. 🔐 Donor creates an account or signs in.
+3. 📝 Donor registers personal and blood donation details.
+4. 🔍 Users search for eligible donors by city and blood group.
+5. 📞 Users can call or SMS matching donors.
+6. 🛡️ Admin signs in to view donors.
+7. 🚨 Admin sends urgent blood request notifications by blood group.
 
-Rules enforced by the app:
+---
 
-- `role: admin` can log in to the admin panel.
-- `role: donor` cannot log in to the admin panel.
-- Empty or missing role cannot log in to the admin panel.
-- Admin accounts cannot sign in as donors.
-- Existing donor accounts with a donor profile and missing `users` role are migrated to `role: donor` on donor sign-in.
-
-## Firestore Collections
+## 🔔 Notification Flow
 
 ```text
-users/{uid}
-donors/{uid}
-donors/{uid}/donations/{donationId}
-donors/{uid}/notifications/{notificationId}
-donorSettings/{uid}
-emergency_request/{requestId}
-donation_center/{centerId}
-supportRequests/{requestId}
+Admin Panel
+   ↓
+NotificationRepository
+   ↓
+Firebase Callable Function: sendGroupNotification
+   ↓
+Firestore donor query by blood group
+   ↓
+Firebase Cloud Messaging
+   ↓
+Donor device notification
 ```
 
-### emergency_request
-
-```js
-emergency_request/{requestId} {
-  bloodGroup: string,
-  patientName: string,
-  location: string,
-  contactNumber: string,
-  note: string,
-  status: "open",
-  createdAt: timestamp,
-  notificationSentAt: timestamp,
-  notificationSuccessCount: number
-}
-```
-
-### donation_center
-
-```js
-donation_center/{centerId} {
-  centerName: string,
-  contactNumber: string,
-  address: string,
-  district: string,
-  createdAt: timestamp
-}
-```
-
-### donations
-
-```js
-donors/{uid}/donations/{donationId} {
-  donationDate: timestamp,
-  patientCount: number,
-  location: string,
-  createdAt: timestamp
-}
-```
-
-## Firebase Cloud Functions
-
-Cloud Functions are in:
+Foreground notifications are handled inside:
 
 ```text
-functions/index.js
+lib/services/notification_service.dart
 ```
 
-Available functions:
+---
 
-- `onEmergencyRequestCreated`
-  - Firestore trigger for `emergency_request/{requestId}`.
-  - Sends push notifications to eligible matching donors.
-  - Saves notification records under each donor.
+## 🔐 Firebase Setup Notes
 
-- `scheduledBloodDonationReminder`
-  - Runs every 24 hours.
-  - Sends reminders to donors whose recovery window is complete.
+For production use, review and secure:
 
-- `sendGroupNotification`
-  - Callable function used by the admin Group Alerts page.
-  - Sends urgent alerts to eligible donors by blood group.
+- 🔒 Firestore security rules
+- 🔑 Firebase Auth admin access policy
+- 📲 FCM permissions on Android and iOS
+- 🧾 Cloud Functions logs and error reporting
+- 🛡️ Validation for donor registration data
 
-## Assets
+---
 
-Main assets:
-
-```text
-assets/blood-lk-logo.png
-assets/banners/banner1.png
-assets/banners/banner2.png
-assets/banners/banner3.png
-```
-
-Android launcher icons are stored in:
-
-```text
-android/app/src/main/res/mipmap-*/ic_launcher.png
-```
-
-If launcher icons do not refresh on a device, uninstall the app or run:
+## 🛠️ Useful Commands
 
 ```bash
-flutter clean
+# Get dependencies
 flutter pub get
+
+# Run app
 flutter run
-```
 
-## Project Structure
-
-```text
-lib/
-  app/
-    app.dart
-    app_routes.dart
-  core/
-    config/firebase_options.dart
-    constants/app_constants.dart
-    theme/app_theme.dart
-  data/
-    models/
-    repositories/
-  services/
-    contact_service.dart
-    notification_service.dart
-  viewmodels/
-  views/
-    admin/
-    auth/
-    donor/
-    home/
-    splash/
-functions/
-  index.js
-assets/
-  blood-lk-logo.png
-  banners/
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK compatible with Dart `>=3.0.0 <4.0.0`
-- Firebase CLI
-- Node.js for Firebase Functions
-- Android Studio, VS Code, or another Flutter IDE
-- Android emulator or physical Android device
-
-Check Flutter:
-
-```bash
-flutter doctor
-```
-
-### Install Dependencies
-
-```bash
-flutter pub get
-cd functions
-npm install
-cd ..
-```
-
-### Firebase Setup
-
-This project is configured for Firebase services. Make sure these are enabled:
-
-- Firebase Authentication
-- Cloud Firestore
-- Firebase Cloud Messaging
-- Cloud Functions
-
-If connecting to another Firebase project:
-
-```bash
-firebase login
-flutterfire configure
-```
-
-## Run
-
-```bash
-flutter run
-```
-
-Run on Android:
-
-```bash
-flutter run -d android
-```
-
-Run on Chrome:
-
-```bash
-flutter run -d chrome
-```
-
-## Quality Checks
-
-Analyze:
-
-```bash
-flutter analyze
-```
-
-Run tests:
-
-```bash
+# Run tests
 flutter test
-```
 
-## Firebase Deploy
+# Analyze project
+flutter analyze
 
-Run functions locally:
+# Build Android APK
+flutter build apk
 
-```bash
-cd functions
-npm run serve
-```
+# Build web release
+flutter build web
 
-Deploy functions:
-
-```bash
+# Deploy Firebase Functions
 firebase deploy --only functions
 ```
 
-## Important Notes
+---
 
-- Admin access depends on the `users/{uid}.role` field.
-- Firestore security rules should also enforce the same role restrictions before production.
-- Push notifications require valid FCM permissions and device tokens.
-- Some Firestore queries are sorted in Dart to avoid requiring composite indexes.
-- Donation eligibility uses a 150-day recovery window.
+## 📱 Supported Platforms
 
-## Main Dependencies
+The Flutter project contains platform folders for:
+
+- 🤖 Android
+- 🍎 iOS
+- 🌐 Web
+- 🪟 Windows
+- 🍏 macOS
+- 🐧 Linux
+
+Firebase and notification behavior may require additional platform-specific configuration before production release.
+
+---
+
+## 🧩 Main Dependencies
 
 ```yaml
 provider: ^6.1.1
@@ -347,6 +358,29 @@ firebase_auth: 5.3.1
 cloud_functions: 5.1.3
 ```
 
-## Purpose
+---
 
-BloodLK is designed to make blood donor coordination faster and clearer for donors, hospitals, and administrators. The goal is simple: help people find eligible donors and respond quickly during urgent blood requests.
+## 🤝 Contributing
+
+Contributions are welcome. A clean workflow:
+
+1. 🍴 Fork the project
+2. 🌿 Create a feature branch
+3. ✅ Run `flutter analyze` and `flutter test`
+4. 📩 Open a pull request
+
+---
+
+## 📄 License
+
+This project is currently marked as **private**. Add a license file if you plan to publish or distribute it.
+
+---
+
+## ❤️ Purpose
+
+BloodLK was created to make blood donor discovery faster, easier, and more organized for urgent situations. Every registered donor can help save a life.
+
+<div align="center">
+  <strong>🩸 Donate blood. Save lives. ❤️</strong>
+</div>
