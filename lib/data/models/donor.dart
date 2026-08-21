@@ -47,6 +47,7 @@ class Donor {
       'phone': phone,
       'bloodGroup': bloodGroup,
       'city': city.toLowerCase(),
+      'role': 'donor',
       'lastDonationDate': lastDonationDate == null
           ? null
           : Timestamp.fromDate(lastDonationDate!),
