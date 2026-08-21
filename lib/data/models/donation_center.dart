@@ -23,6 +23,15 @@ class DonationCenter {
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'centerName': name.trim(),
+      'contactNumber': contactNumber.trim(),
+      'address': address.trim(),
+      'district': district.trim(),
+    };
+  }
+
   bool matchesSearch(String query) {
     final normalizedQuery = query.trim().toLowerCase();
     if (normalizedQuery.isEmpty) return true;
