@@ -75,10 +75,19 @@ class _DonationCentersViewState extends State<DonationCentersView> {
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedDistrict,
+                        isExpanded: true,
+                        itemHeight: 48,
+                        menuMaxHeight: 240,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(
                             Icons.map_rounded,
                             color: AppColors.bloodRed,
+                          ),
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            14,
+                            16,
+                            14,
+                            16,
                           ),
                           filled: true,
                           fillColor: Colors.white,
@@ -93,7 +102,15 @@ class _DonationCentersViewState extends State<DonationCentersView> {
                             .map(
                               (district) => DropdownMenuItem(
                                 value: district,
-                                child: Text(district),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Text(
+                                    district,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ),
                             )
                             .toList(),
