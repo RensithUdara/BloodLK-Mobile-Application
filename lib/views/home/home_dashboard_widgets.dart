@@ -125,7 +125,7 @@ class _DonorHomeBannerCarouselState extends State<DonorHomeBannerCarousel> {
       child: Column(
         children: [
           AspectRatio(
-            aspectRatio: 16 / 7,
+            aspectRatio: 16 / 9,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: PageView.builder(
@@ -137,7 +137,7 @@ class _DonorHomeBannerCarouselState extends State<DonorHomeBannerCarousel> {
                 itemBuilder: (context, index) {
                   return Image.asset(
                     _banners[index],
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         color: const Color(0xFFFFECEE),
