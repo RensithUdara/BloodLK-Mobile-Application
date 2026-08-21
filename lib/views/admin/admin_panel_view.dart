@@ -75,51 +75,54 @@ class AdminPanelView extends StatelessWidget {
           Positioned.fill(
               child: CustomPaint(painter: _AdminDashboardBackdrop())),
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      const _AdminDashboardHeader(),
-                      _OverviewCard(onReportsTap: () {
-                        _open(context, const AdminBloodSummaryView());
-                      }),
-                      const SizedBox(height: 24),
-                      const _SectionHeading('Quick Actions'),
-                    ],
-                  ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.0,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) =>
-                          _AdminActionTile(action: actions[index]),
-                      childCount: actions.length,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 182),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        _OverviewCard(onReportsTap: () {
+                          _open(context, const AdminBloodSummaryView());
+                        }),
+                        const SizedBox(height: 24),
+                        const _SectionHeading('Quick Actions'),
+                      ],
                     ),
                   ),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 104),
-                  sliver: SliverToBoxAdapter(
-                    child: _RecentActivityCard(
-                      onTap: () => _open(
-                        context,
-                        const AdminEmergencyRequestsView(),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1.0,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) =>
+                            _AdminActionTile(action: actions[index]),
+                        childCount: actions.length,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(18, 0, 18, 104),
+                    sliver: SliverToBoxAdapter(
+                      child: _RecentActivityCard(
+                        onTap: () => _open(
+                          context,
+                          const AdminEmergencyRequestsView(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+          const SafeArea(child: _AdminDashboardHeader()),
           Positioned(
             left: 18,
             right: 18,
