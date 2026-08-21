@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../viewmodels/admin_view_model.dart';
-import '../home/donation_centers_view.dart';
+import 'admin_donation_centers_view.dart';
 import 'admin_donors_view.dart';
 import 'admin_emergency_requests_view.dart';
 import 'admin_group_notifications_view.dart';
@@ -37,7 +37,7 @@ class AdminPanelView extends StatelessWidget {
       _AdminHomeAction(
         title: 'Donation Centers',
         icon: Icons.local_hospital_rounded,
-        onTap: () => _open(context, DonationCentersView()),
+        onTap: () => _open(context, const AdminDonationCentersView()),
       ),
     ];
 
