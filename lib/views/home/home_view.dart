@@ -10,6 +10,7 @@ import 'help_center_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
 import 'next_eligibility_view.dart';
+import 'notifications_view.dart';
 import 'past_donations_view.dart';
 import 'settings_view.dart';
 
@@ -116,6 +117,10 @@ class _HomeViewState extends State<HomeView> {
       _openEmergencyRequests();
       return;
     }
+    if (feature.title == 'Notifications') {
+      _openNotifications();
+      return;
+    }
     if (feature.title == 'Settings') {
       _openSettings();
       return;
@@ -198,6 +203,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => EmergencyRequestsView()),
+    );
+  }
+
+  void _openNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationsView()),
     );
   }
 
