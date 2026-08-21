@@ -15,14 +15,20 @@ class EmergencyRequestRepository {
   }
 
   Stream<List<EmergencyRequest>> watchOpenRequests() {
-    return _requests
-        .where('status', isEqualTo: 'open')
-        .orderBy('createdAt', descending: true)
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => EmergencyRequest.fromMap(doc.id, doc.data()))
-              .toList(growable: false),
-        );
+    return _requests.where('status', isEqualTo: 'open').snapshots().map(
+      (snapshot) {
+        final requests = snapshot.docs
+            .map((doc) => EmergencyRequest.fromMap(doc.id, doc.data()))
+            .toList();
+
+        requests.sort((a, b) {
+          final aDate = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bDate = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bDate.compareTo(aDate);
+        });
+
+        return List<EmergencyRequest>.unmodifiable(requests);
+      },
+    );
   }
 }
