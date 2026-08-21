@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../viewmodels/admin_view_model.dart';
+import 'admin_blood_summary_view.dart';
 import 'admin_donation_centers_view.dart';
 import 'admin_donors_view.dart';
+import 'admin_eligibility_view.dart';
 import 'admin_emergency_requests_view.dart';
 import 'admin_group_notifications_view.dart';
+import 'admin_help_view.dart';
 import 'admin_post_request_view.dart';
+import 'admin_settings_view.dart';
 
 class AdminPanelView extends StatelessWidget {
   const AdminPanelView({super.key});
@@ -39,6 +43,26 @@ class AdminPanelView extends StatelessWidget {
         icon: Icons.local_hospital_rounded,
         onTap: () => _open(context, const AdminDonationCentersView()),
       ),
+      _AdminHomeAction(
+        title: 'Eligibility',
+        icon: Icons.event_available_rounded,
+        onTap: () => _open(context, const AdminEligibilityView()),
+      ),
+      _AdminHomeAction(
+        title: 'Blood Summary',
+        icon: Icons.bloodtype_rounded,
+        onTap: () => _open(context, const AdminBloodSummaryView()),
+      ),
+      _AdminHomeAction(
+        title: 'Settings',
+        icon: Icons.settings_rounded,
+        onTap: () => _open(context, const AdminSettingsView()),
+      ),
+      _AdminHomeAction(
+        title: 'Help Center',
+        icon: Icons.support_agent_rounded,
+        onTap: () => _open(context, const AdminHelpView()),
+      ),
     ];
 
     return Scaffold(
@@ -58,7 +82,7 @@ class AdminPanelView extends StatelessWidget {
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
-                      childAspectRatio: 0.98,
+                      childAspectRatio: 1.0,
                     ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) =>
