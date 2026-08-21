@@ -1,52 +1,188 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_constants.dart';
+import '../../data/models/donation_center.dart';
 import '../../data/models/donor.dart';
 import '../../viewmodels/admin_view_model.dart';
 import '../donor/donor_details_view.dart';
 import 'admin_page_shell.dart';
 
-class AdminDonorsView extends StatelessWidget {
+class AdminDonorsView extends StatefulWidget {
   const AdminDonorsView({super.key});
+
+  @override
+  State<AdminDonorsView> createState() => _AdminDonorsViewState();
+}
+
+class _AdminDonorsViewState extends State<AdminDonorsView> {
+  final _searchController = TextEditingController();
+  String _selectedDistrict = DonationDistricts.all;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AdminPageShell(
       title: 'Donors',
-      child: StreamBuilder<List<Donor>>(
-        stream: context.watch<AdminViewModel>().watchDonors(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.bloodRed),
-            );
-          }
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Search donors',
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.bloodRed,
+                    ),
+                    suffixIcon: _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Clear search',
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.close_rounded),
+                          ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: _inputBorder(),
+                    enabledBorder: _inputBorder(),
+                    focusedBorder: _inputBorder(color: AppColors.bloodRed),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedDistrict,
+                  isExpanded: true,
+                  itemHeight: 48,
+                  menuMaxHeight: 240,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.map_rounded,
+                      color: AppColors.bloodRed,
+                    ),
+                    contentPadding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: _inputBorder(),
+                    enabledBorder: _inputBorder(),
+                    focusedBorder: _inputBorder(color: AppColors.bloodRed),
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  items: DonationDistricts.values
+                      .map(
+                        (district) => DropdownMenuItem(
+                          value: district,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Text(
+                              district,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) return;
+                    setState(() => _selectedDistrict = value);
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<Donor>>(
+              stream: context.watch<AdminViewModel>().watchDonors(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.bloodRed,
+                    ),
+                  );
+                }
 
-          if (snapshot.hasError) {
-            return AdminEmptyState(
-              icon: Icons.error_outline_rounded,
-              title: 'Unable to load donors',
-              message: snapshot.error.toString(),
-            );
-          }
+                if (snapshot.hasError) {
+                  return AdminEmptyState(
+                    icon: Icons.error_outline_rounded,
+                    title: 'Unable to load donors',
+                    message: snapshot.error.toString(),
+                  );
+                }
 
-          final donors = snapshot.data ?? const <Donor>[];
-          if (donors.isEmpty) {
-            return const AdminEmptyState(
-              icon: Icons.groups_rounded,
-              title: 'No donors available',
-              message: 'Registered donors will appear here.',
-            );
-          }
+                final allDonors = snapshot.data ?? const <Donor>[];
+                if (allDonors.isEmpty) {
+                  return const AdminEmptyState(
+                    icon: Icons.groups_rounded,
+                    title: 'No donors available',
+                    message: 'Registered donors will appear here.',
+                  );
+                }
 
-          return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-            itemBuilder: (context, index) => _DonorCard(donor: donors[index]),
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemCount: donors.length,
-          );
-        },
+                final donors = allDonors
+                    .where(
+                      (donor) =>
+                          _matchesSearch(donor, _searchController.text) &&
+                          _matchesDistrict(donor, _selectedDistrict),
+                    )
+                    .toList(growable: false);
+
+                if (donors.isEmpty) {
+                  return const AdminEmptyState(
+                    icon: Icons.search_off_rounded,
+                    title: 'No matching donors',
+                    message: 'Try a different search or district.',
+                  );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+                  itemBuilder: (context, index) {
+                    return _DonorCard(donor: donors[index]);
+                  },
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemCount: donors.length,
+                );
+              },
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  bool _matchesSearch(Donor donor, String query) {
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) return true;
+
+    return donor.name.toLowerCase().contains(normalizedQuery) ||
+        donor.phone.toLowerCase().contains(normalizedQuery) ||
+        donor.nic.toLowerCase().contains(normalizedQuery) ||
+        donor.bloodGroup.toLowerCase().contains(normalizedQuery) ||
+        donor.city.toLowerCase().contains(normalizedQuery);
+  }
+
+  bool _matchesDistrict(Donor donor, String district) {
+    if (district == DonationDistricts.all) return true;
+    return donor.city.trim().toLowerCase() == district.toLowerCase();
+  }
+
+  OutlineInputBorder _inputBorder({Color color = const Color(0xFFFFE6E8)}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: color),
     );
   }
 }
