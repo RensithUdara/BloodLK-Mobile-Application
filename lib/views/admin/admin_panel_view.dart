@@ -237,63 +237,9 @@ class _AdminDashboardHeader extends StatelessWidget {
                 ),
               ),
             ),
-            const _NotificationBadge(),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _NotificationBadge extends StatelessWidget {
-  const _NotificationBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<List<EmergencyRequest>>(
-      stream: context.watch<AdminViewModel>().watchEmergencyRequests(),
-      builder: (context, snapshot) {
-        final count = snapshot.data?.length ?? 0;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.22),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.notifications_rounded,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            if (count > 0)
-              Positioned(
-                right: -2,
-                top: -4,
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: AppColors.bloodRed,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Text(
-                    count > 9 ? '9+' : count.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
     );
   }
 }
