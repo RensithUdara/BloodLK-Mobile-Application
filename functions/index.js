@@ -35,14 +35,14 @@ async function getEnabledSettings(uid) {
   };
 }
 
-async function getMatchingDonorTokens({ bloodGroup, city }) {
+async function getMatchingDonors({ bloodGroup, city, settingKey }) {
   const donorSnapshot = await admin
     .firestore()
     .collection("donors")
     .where("bloodGroup", "==", bloodGroup)
     .get();
 
-  const tokens = [];
+  const donors = [];
   const seen = new Set();
 
   for (const doc of donorSnapshot.docs) {
@@ -51,7 +51,7 @@ async function getMatchingDonorTokens({ bloodGroup, city }) {
     if (!token || seen.has(token) || !isEligibleDonor(donor)) continue;
 
     const settings = await getEnabledSettings(doc.id);
-    if (!settings.urgentAlerts) continue;
+    if (settingKey && !settings[settingKey]) continue;
     if (
       city &&
       settings.cityAlerts &&
@@ -62,16 +62,17 @@ async function getMatchingDonorTokens({ bloodGroup, city }) {
     }
 
     seen.add(token);
-    tokens.push(token);
+    donors.push({ uid: doc.id, token });
   }
 
-  return tokens;
+  return donors;
 }
 
-async function sendToTokens(tokens, payload) {
-  if (tokens.length === 0) return 0;
+async function sendToDonors(donors, payload) {
+  if (donors.length === 0) return 0;
 
   let successCount = 0;
+  const tokens = donors.map((donor) => donor.token);
   const chunks = [];
   for (let index = 0; index < tokens.length; index += 500) {
     chunks.push(tokens.slice(index, index + 500));
@@ -97,6 +98,41 @@ async function sendToTokens(tokens, payload) {
   return successCount;
 }
 
+async function saveNotificationRecords(donors, payload) {
+  if (donors.length === 0) return;
+
+  const db = admin.firestore();
+  let batch = db.batch();
+  let count = 0;
+
+  for (const donor of donors) {
+    const ref = db
+      .collection("donors")
+      .doc(donor.uid)
+      .collection("notifications")
+      .doc();
+
+    batch.set(ref, {
+      title: payload.notification.title,
+      body: payload.notification.body,
+      type: payload.data.type || "general",
+      bloodGroup: payload.data.bloodGroup || null,
+      requestId: payload.data.requestId || null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      read: false,
+    });
+
+    count++;
+    if (count === 450) {
+      await batch.commit();
+      batch = db.batch();
+      count = 0;
+    }
+  }
+
+  if (count > 0) await batch.commit();
+}
+
 exports.onEmergencyRequestCreated = onDocumentCreated(
   "emergency_request/{requestId}",
   async (event) => {
@@ -106,9 +142,10 @@ exports.onEmergencyRequestCreated = onDocumentCreated(
     const bloodGroup = request.bloodGroup;
     if (!bloodGroup) return null;
 
-    const tokens = await getMatchingDonorTokens({
+    const donors = await getMatchingDonors({
       bloodGroup,
       city: request.city || "",
+      settingKey: "urgentAlerts",
     });
 
     const title = `Urgent ${bloodGroup} blood request`;
@@ -116,14 +153,17 @@ exports.onEmergencyRequestCreated = onDocumentCreated(
       ? `Emergency request at ${request.location}. Tap for contact details.`
       : "An emergency blood request was posted. Tap for contact details.";
 
-    const successCount = await sendToTokens(tokens, {
+    const payload = {
       notification: { title, body },
       data: {
         type: "emergency_request",
         requestId: event.params.requestId,
         bloodGroup: bloodGroup.toString(),
       },
-    });
+    };
+
+    await saveNotificationRecords(donors, payload);
+    const successCount = await sendToDonors(donors, payload);
 
     await event.data.ref.set(
       {
@@ -144,7 +184,7 @@ exports.scheduledBloodDonationReminder = onSchedule("every 24 hours", async () =
     .where("lastDonationDate", "<=", lastEligibleDate())
     .get();
 
-  const tokens = [];
+  const donors = [];
   const seen = new Set();
 
   for (const doc of donorSnapshot.docs) {
@@ -156,16 +196,19 @@ exports.scheduledBloodDonationReminder = onSchedule("every 24 hours", async () =
     if (!settings.eligibilityReminders) continue;
 
     seen.add(token);
-    tokens.push(token);
+    donors.push({ uid: doc.id, token });
   }
 
-  const successCount = await sendToTokens(tokens, {
+  const payload = {
     notification: {
       title: "You can donate blood again",
       body: "Your donor recovery window is complete. Thank you for being ready to help.",
     },
     data: { type: "eligibility_reminder" },
-  });
+  };
+
+  await saveNotificationRecords(donors, payload);
+  const successCount = await sendToDonors(donors, payload);
 
   console.log(`scheduledBloodDonationReminder sent ${successCount} notifications`);
   return null;
@@ -179,8 +222,12 @@ exports.sendGroupNotification = onCall(async (request) => {
     throw new HttpsError("invalid-argument", "bloodType is required");
   }
 
-  const tokens = await getMatchingDonorTokens({ bloodGroup: bloodType, city: "" });
-  const successCount = await sendToTokens(tokens, {
+  const donors = await getMatchingDonors({
+    bloodGroup: bloodType,
+    city: "",
+    settingKey: "urgentAlerts",
+  });
+  const payload = {
     notification: {
       title: `Urgent ${bloodType} blood request`,
       body:
@@ -191,7 +238,10 @@ exports.sendGroupNotification = onCall(async (request) => {
       type: "group_notification",
       bloodGroup: bloodType.toString(),
     },
-  });
+  };
+
+  await saveNotificationRecords(donors, payload);
+  const successCount = await sendToDonors(donors, payload);
 
   if (successCount === 0) {
     return {
