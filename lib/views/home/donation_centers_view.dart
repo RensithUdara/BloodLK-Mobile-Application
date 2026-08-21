@@ -74,7 +74,7 @@ class _DonationCentersViewState extends State<DonationCentersView> {
                       ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
-                        value: _selectedDistrict,
+                        initialValue: _selectedDistrict,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(
                             Icons.map_rounded,
