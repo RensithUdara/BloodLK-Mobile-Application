@@ -3,6 +3,7 @@ import '../../data/models/donor.dart';
 import '../../data/repositories/donor_repository.dart';
 import 'achievements_view.dart';
 import 'add_donation_view.dart';
+import 'donation_centers_view.dart';
 import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
 import 'emergency_requests_view.dart';
@@ -109,6 +110,10 @@ class _HomeViewState extends State<HomeView> {
       _openPastDonations();
       return;
     }
+    if (feature.title == 'Donation Centers') {
+      _openDonationCenters();
+      return;
+    }
     if (feature.title == 'Next Eligibility') {
       _openNextEligibility();
       return;
@@ -146,7 +151,7 @@ class _HomeViewState extends State<HomeView> {
     if (index == 0) return;
 
     if (index == 1) {
-      _openFeature(_featureByTitle('Donation Centers'));
+      _openDonationCenters();
       return;
     }
 
@@ -189,6 +194,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PastDonationsView()),
+    );
+  }
+
+  void _openDonationCenters() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => DonationCentersView()),
     );
   }
 
