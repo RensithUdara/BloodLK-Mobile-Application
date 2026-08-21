@@ -76,7 +76,7 @@ class AdminPanelView extends StatelessWidget {
               child: CustomPaint(painter: _AdminDashboardBackdrop())),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.only(top: 182),
+              padding: const EdgeInsets.only(top: 162),
               child: CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
@@ -178,15 +178,15 @@ class _AdminDashboardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 196,
+      height: 176,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 78,
-              height: 78,
+              width: 68,
+              height: 68,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -201,13 +201,13 @@ class _AdminDashboardHeader extends StatelessWidget {
               child: const Icon(
                 Icons.admin_panel_settings_rounded,
                 color: AppColors.bloodRed,
-                size: 46,
+                size: 40,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             const Expanded(
               child: Padding(
-                padding: EdgeInsets.only(top: 12),
+                padding: EdgeInsets.only(top: 9),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -771,7 +771,7 @@ class _AdminDashboardBackdrop extends CustomPainter {
       Paint()..color = const Color(0xFFFFF7F7),
     );
 
-    final headerRect = Rect.fromLTWH(0, 0, size.width, 250);
+    final headerRect = Rect.fromLTWH(0, 0, size.width, 228);
     canvas.drawRect(
       headerRect,
       Paint()
@@ -783,10 +783,10 @@ class _AdminDashboardBackdrop extends CustomPainter {
     );
 
     final softWave = Path()
-      ..moveTo(0, 144)
-      ..cubicTo(size.width * 0.28, 206, size.width * 0.62, 72, size.width, 130)
-      ..lineTo(size.width, 252)
-      ..cubicTo(size.width * 0.62, 222, size.width * 0.32, 298, 0, 220)
+      ..moveTo(0, 128)
+      ..cubicTo(size.width * 0.28, 184, size.width * 0.62, 64, size.width, 116)
+      ..lineTo(size.width, 228)
+      ..cubicTo(size.width * 0.62, 202, size.width * 0.32, 270, 0, 198)
       ..close();
     canvas.drawPath(
       softWave,
@@ -794,8 +794,8 @@ class _AdminDashboardBackdrop extends CustomPainter {
     );
 
     final wave = Path()
-      ..moveTo(0, 214)
-      ..cubicTo(size.width * 0.22, 248, size.width * 0.46, 178, size.width, 208)
+      ..moveTo(0, 190)
+      ..cubicTo(size.width * 0.22, 220, size.width * 0.46, 160, size.width, 184)
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
