@@ -5,6 +5,7 @@ import 'achievements_view.dart';
 import 'add_donation_view.dart';
 import 'donor_feature_detail_view.dart';
 import 'donor_profile_view.dart';
+import 'emergency_requests_view.dart';
 import 'help_center_view.dart';
 import 'home_dashboard_widgets.dart';
 import 'home_feature_data.dart';
@@ -111,6 +112,10 @@ class _HomeViewState extends State<HomeView> {
       _openNextEligibility();
       return;
     }
+    if (feature.title == 'Emergency Requests') {
+      _openEmergencyRequests();
+      return;
+    }
     if (feature.title == 'Settings') {
       _openSettings();
       return;
@@ -186,6 +191,13 @@ class _HomeViewState extends State<HomeView> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => NextEligibilityView()),
+    );
+  }
+
+  void _openEmergencyRequests() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => EmergencyRequestsView()),
     );
   }
 
