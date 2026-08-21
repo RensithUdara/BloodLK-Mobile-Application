@@ -22,6 +22,10 @@ class AdminViewModel extends ChangeNotifier {
 
   Stream<List<Donor>> watchDonors() => _donorRepository.watchAllDonors();
 
+  Stream<List<EmergencyRequest>> watchEmergencyRequests() {
+    return _emergencyRequestRepository.watchOpenRequests();
+  }
+
   Future<int> sendGroupNotification(String bloodType) {
     return _notificationRepository.sendGroupNotification(bloodType);
   }
