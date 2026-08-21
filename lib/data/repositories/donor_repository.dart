@@ -13,13 +13,30 @@ class DonorRepository {
   CollectionReference<Map<String, dynamic>> get _donors =>
       _firestore.collection('donors');
 
-  Future<void> saveDonor(Donor donor) {
+  CollectionReference<Map<String, dynamic>> get _users =>
+      _firestore.collection('users');
+
+  Future<void> saveDonor(Donor donor) async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) {
       throw Exception('Please sign in before registering as a donor');
     }
 
-    return _donors.doc(uid).set(donor.toMap(), SetOptions(merge: true));
+    final email = _auth.currentUser?.email ?? '';
+    final batch = _firestore.batch();
+
+    batch.set(_donors.doc(uid), donor.toMap(), SetOptions(merge: true));
+    batch.set(
+      _users.doc(uid),
+      {
+        'email': email.trim().toLowerCase(),
+        'role': 'donor',
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+
+    await batch.commit();
   }
 
   Stream<Donor?> watchCurrentDonor() {
