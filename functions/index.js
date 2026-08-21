@@ -1,111 +1,205 @@
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
-const { onCall } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+
 admin.initializeApp();
 
+const RECOVERY_DAYS = 150;
 
-exports.scheduledBloodDonationReminder = onSchedule("every 24 hours", async (event) => {
-    const db = admin.firestore();
-    const now = new Date();
-    const fiveMonthsAgo = new Date();
-    fiveMonthsAgo.setDate(now.getDate() - 150);
-    const snapshot = await db.collection("donors")
-        .where("lastDonationDate", "<=", fiveMonthsAgo)
-        .get();
-    if (snapshot.empty) {
-        console.log("No donors found to remind.");
-        return null;
+function lastEligibleDate() {
+  const date = new Date();
+  date.setDate(date.getDate() - RECOVERY_DAYS);
+  return date;
+}
+
+function isEligibleDonor(donor) {
+  if (!donor.lastDonationDate) return true;
+  const lastDonationDate = donor.lastDonationDate.toDate
+    ? donor.lastDonationDate.toDate()
+    : new Date(donor.lastDonationDate);
+  return lastDonationDate <= lastEligibleDate();
+}
+
+function cleanToken(value) {
+  return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+}
+
+async function getEnabledSettings(uid) {
+  const snapshot = await admin.firestore().collection("donorSettings").doc(uid).get();
+  const settings = snapshot.data() || {};
+  return {
+    urgentAlerts: settings.urgentAlerts !== false,
+    eligibilityReminders: settings.eligibilityReminders !== false,
+    cityAlerts: settings.cityAlerts !== false,
+  };
+}
+
+async function getMatchingDonorTokens({ bloodGroup, city }) {
+  const donorSnapshot = await admin
+    .firestore()
+    .collection("donors")
+    .where("bloodGroup", "==", bloodGroup)
+    .get();
+
+  const tokens = [];
+  const seen = new Set();
+
+  for (const doc of donorSnapshot.docs) {
+    const donor = doc.data();
+    const token = cleanToken(donor.fcmToken);
+    if (!token || seen.has(token) || !isEligibleDonor(donor)) continue;
+
+    const settings = await getEnabledSettings(doc.id);
+    if (!settings.urgentAlerts) continue;
+    if (
+      city &&
+      settings.cityAlerts &&
+      donor.city &&
+      donor.city.toString().toLowerCase() !== city.toLowerCase()
+    ) {
+      continue;
     }
-    const promises = [];
-    snapshot.forEach((doc) => {
-        const donor = doc.data();
-        if (donor.fcmToken && typeof donor.fcmToken === 'string' && donor.fcmToken.trim() !== '') {
-            const message = {
-                notification: {
-                    title: "ලේ දන් දීමේ කාලය පැමිණ ඇත!",
-                    body: `ඔබේ ලේ වර්ගයට (${donor.bloodGroup || 'N/A'}) අලුතින් ලේ අවශ්‍යතාවයක් පවතී. කරුණාකර අපව සම්බන්ධ කරගන්න.`
-                },
-                token: donor.fcmToken
-            };
-            promises.push(admin.messaging().send(message));
-        }
+
+    seen.add(token);
+    tokens.push(token);
+  }
+
+  return tokens;
+}
+
+async function sendToTokens(tokens, payload) {
+  if (tokens.length === 0) return 0;
+
+  let successCount = 0;
+  const chunks = [];
+  for (let index = 0; index < tokens.length; index += 500) {
+    chunks.push(tokens.slice(index, index + 500));
+  }
+
+  for (const chunk of chunks) {
+    const response = await admin.messaging().sendEachForMulticast({
+      tokens: chunk,
+      notification: payload.notification,
+      data: payload.data,
+      android: {
+        priority: "high",
+        notification: {
+          channelId: "blood_channel",
+          priority: "high",
+          defaultSound: true,
+        },
+      },
     });
-    return Promise.all(promises);
+    successCount += response.successCount;
+  }
+
+  return successCount;
+}
+
+exports.onEmergencyRequestCreated = onDocumentCreated(
+  "emergency_request/{requestId}",
+  async (event) => {
+    const request = event.data && event.data.data();
+    if (!request || request.status === "closed") return null;
+
+    const bloodGroup = request.bloodGroup;
+    if (!bloodGroup) return null;
+
+    const tokens = await getMatchingDonorTokens({
+      bloodGroup,
+      city: request.city || "",
+    });
+
+    const title = `Urgent ${bloodGroup} blood request`;
+    const body = request.location
+      ? `Emergency request at ${request.location}. Tap for contact details.`
+      : "An emergency blood request was posted. Tap for contact details.";
+
+    const successCount = await sendToTokens(tokens, {
+      notification: { title, body },
+      data: {
+        type: "emergency_request",
+        requestId: event.params.requestId,
+        bloodGroup: bloodGroup.toString(),
+      },
+    });
+
+    await event.data.ref.set(
+      {
+        notificationSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        notificationSuccessCount: successCount,
+      },
+      { merge: true },
+    );
+
+    return null;
+  }
+);
+
+exports.scheduledBloodDonationReminder = onSchedule("every 24 hours", async () => {
+  const donorSnapshot = await admin
+    .firestore()
+    .collection("donors")
+    .where("lastDonationDate", "<=", lastEligibleDate())
+    .get();
+
+  const tokens = [];
+  const seen = new Set();
+
+  for (const doc of donorSnapshot.docs) {
+    const donor = doc.data();
+    const token = cleanToken(donor.fcmToken);
+    if (!token || seen.has(token)) continue;
+
+    const settings = await getEnabledSettings(doc.id);
+    if (!settings.eligibilityReminders) continue;
+
+    seen.add(token);
+    tokens.push(token);
+  }
+
+  const successCount = await sendToTokens(tokens, {
+    notification: {
+      title: "You can donate blood again",
+      body: "Your donor recovery window is complete. Thank you for being ready to help.",
+    },
+    data: { type: "eligibility_reminder" },
+  });
+
+  console.log(`scheduledBloodDonationReminder sent ${successCount} notifications`);
+  return null;
 });
 
-
 exports.sendGroupNotification = onCall(async (request) => {
-    try {
-        const { bloodType, messageContent } = request.data;
-        const db = admin.firestore();
+  const bloodType = request.data && request.data.bloodType;
+  const messageContent = request.data && request.data.messageContent;
 
-        const fiveMonthsAgo = new Date();
-        fiveMonthsAgo.setDate(fiveMonthsAgo.getDate() - 150);
+  if (!bloodType) {
+    throw new HttpsError("invalid-argument", "bloodType is required");
+  }
 
+  const tokens = await getMatchingDonorTokens({ bloodGroup: bloodType, city: "" });
+  const successCount = await sendToTokens(tokens, {
+    notification: {
+      title: `Urgent ${bloodType} blood request`,
+      body:
+        messageContent ||
+        `Urgent blood request for ${bloodType} donors. Please contact the hospital if you can help.`,
+    },
+    data: {
+      type: "group_notification",
+      bloodGroup: bloodType.toString(),
+    },
+  });
 
-        const oldDonorsSnapshot = await db.collection("donors")
-            .where("bloodGroup", "==", bloodType)
-            .where("lastDonationDate", "<=", fiveMonthsAgo)
-            .get();
+  if (successCount === 0) {
+    return {
+      success: false,
+      count: 0,
+      message: "No eligible donors with enabled push tokens were found.",
+    };
+  }
 
-
-        const allDonorsSnapshot = await db.collection("donors")
-            .where("bloodGroup", "==", bloodType)
-            .get();
-
-
-        const newDonorsDocs = allDonorsSnapshot.docs.filter(doc => !doc.data().lastDonationDate);
-
-        const allDocs = [...oldDonorsSnapshot.docs, ...newDonorsDocs];
-
-        console.log(`sendGroupNotification: bloodType=${bloodType}, oldDonors=${oldDonorsSnapshot.docs.length}, allDonors=${allDonorsSnapshot.docs.length}, newDonors=${newDonorsDocs.length}, totalMatched=${allDocs.length}`);
-
-        if (allDocs.length === 0) {
-            return { success: false, message: "මෙම ලේ වර්ගයට අදාළව දැනුම් දිය යුතු දායකයින් නැත." };
-        }
-
-        const promises = [];
-        const seenTokens = new Set();
-        let skippedNoToken = 0;
-
-        allDocs.forEach((doc) => {
-            const donor = doc.data();
-            if (donor.fcmToken && typeof donor.fcmToken === 'string' && donor.fcmToken.trim() !== '' && !seenTokens.has(donor.fcmToken)) {
-                seenTokens.add(donor.fcmToken);
-                const message = {
-                    notification: {
-                        title: "හදිසි ලේ අවශ්‍යතාවයක්!",
-                        body: messageContent
-                    },
-                    token: donor.fcmToken
-                };
-                promises.push(admin.messaging().send(message));
-            } else {
-                skippedNoToken++;
-            }
-        });
-
-        console.log(`sendGroupNotification: attemptingSends=${promises.length}, skippedNoToken=${skippedNoToken}`);
-
-        if (promises.length === 0) {
-            return { success: false, message: "මෙම ලේ වර්ගයට අදාළ දායකයින් සිටී, ඒත් notification token නැත." };
-        }
-
-        const results = await Promise.allSettled(promises);
-        const successCount = results.filter(r => r.status === 'fulfilled').length;
-
-
-        results.forEach((r, i) => {
-            if (r.status === 'rejected') {
-                console.error(`FCM send failed [index ${i}]:`, r.reason && r.reason.message ? r.reason.message : r.reason);
-            }
-        });
-
-        console.log(`sendGroupNotification result: bloodType=${bloodType}, attempted=${promises.length}, success=${successCount}`);
-
-        return { success: true, count: successCount };
-    } catch (error) {
-        console.error("sendGroupNotification error:", error);
-        throw new Error(error.message || "Unknown error occurred");
-    }
+  return { success: true, count: successCount };
 });
