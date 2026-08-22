@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import {
   addDoc,
   collection,
@@ -11,9 +11,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore';
-import {
-  getToken,
-} from 'firebase/messaging';
+import { getToken } from 'firebase/messaging';
 import { httpsCallable } from 'firebase/functions';
 import {
   Activity,
@@ -359,6 +357,11 @@ function Header({ user, stats, setToast }) {
           Sign Out
         </button>
       </div>
+      <div className="hero-visual" aria-hidden="true">
+        <div className="hero-orbit">
+          <Droplet size={42} />
+        </div>
+      </div>
     </header>
   );
 }
@@ -500,8 +503,8 @@ function RequestsView({ requests, setToast }) {
               <span className="round-icon"><Droplet size={22} /></span>
               <div>
                 <strong>{item.bloodGroup} request for {item.patientName || 'patient'}</strong>
-                <p>{item.location || 'No location'} • {item.contactNumber || 'No phone'}</p>
-                <small>{item.note || 'No note'} • {formatDateTime(item.createdAt)}</small>
+                <p>{item.location || 'No location'} - {item.contactNumber || 'No phone'}</p>
+                <small>{item.note || 'No note'} - {formatDateTime(item.createdAt)}</small>
               </div>
               <span className={`status ${item.status === 'closed' ? 'muted' : ''}`}>{item.status || 'open'}</span>
               {item.status !== 'closed' && (
@@ -540,8 +543,8 @@ function DonorsView({ donors }) {
               <span className="round-icon"><UserRound size={22} /></span>
               <div>
                 <strong>{donor.name || 'Unnamed donor'}</strong>
-                <p>{donor.bloodGroup || 'N/A'} • {donor.city || 'No district'} • Age {donor.age || '-'}</p>
-                <small>{donor.phone || 'No phone'} • Last donation: {formatDate(donor.lastDonationDate)}</small>
+                <p>{donor.bloodGroup || 'N/A'} - {donor.city || 'No district'} - Age {donor.age || '-'}</p>
+                <small>{donor.phone || 'No phone'} - Last donation: {formatDate(donor.lastDonationDate)}</small>
               </div>
               {donor.phone && (
                 <a className="icon-button" href={`tel:${donor.phone}`} title="Call donor">
@@ -672,7 +675,7 @@ function CentersView({ centers, setToast }) {
                   <div>
                     <strong>{name}</strong>
                     <p>{address || 'No address'}</p>
-                    <small>{area || 'No district'} • {phone || 'No phone'}</small>
+                    <small>{area || 'No district'} - {phone || 'No phone'}</small>
                   </div>
                   {phone && <a className="icon-button" href={`tel:${phone}`}><Phone size={18} /></a>}
                 </article>
@@ -708,7 +711,7 @@ function EligibilityView({ donors }) {
               <span className="round-icon"><CalendarCheck size={22} /></span>
               <div>
                 <strong>{donor.name || 'Unnamed donor'}</strong>
-                <p>{donor.bloodGroup || 'N/A'} • {donor.city || 'No district'}</p>
+                <p>{donor.bloodGroup || 'N/A'} - {donor.city || 'No district'}</p>
                 <small>Next eligible: {formatDate(donor.nextEligible)}</small>
               </div>
               <span className={`status ${ready ? '' : 'muted'}`}>{ready ? 'Ready' : 'Waiting'}</span>
@@ -901,3 +904,4 @@ function Toast({ toast, onClose }) {
     </div>
   );
 }
+
