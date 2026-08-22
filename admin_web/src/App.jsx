@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   addDoc,
   collection,
@@ -13,14 +13,12 @@ import {
 } from 'firebase/firestore';
 import {
   getToken,
-  NotificationPermission,
 } from 'firebase/messaging';
 import { httpsCallable } from 'firebase/functions';
 import {
   Activity,
   AlertCircle,
   Bell,
-  Blood,
   Building2,
   CalendarCheck,
   Check,
@@ -370,7 +368,7 @@ function Dashboard({ donors, requests, centers, units, stats, setActiveTab }) {
   const cards = [
     { label: 'Requests', value: stats.requests, icon: Droplet },
     { label: 'Donors', value: stats.donors, icon: UsersRound },
-    { label: 'Units', value: units, icon: Blood },
+    { label: 'Units', value: units, icon: Droplet },
     { label: 'Centers', value: stats.centers, icon: Building2 },
   ];
   const actions = tabs.filter((tab) => !['dashboard'].includes(tab.id)).slice(0, 9);
