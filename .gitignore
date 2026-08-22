@@ -10,6 +10,8 @@ build/
 # Local environment
 .env
 .env.*
+!.env.example
+!**/.env.example
 *.local
 
 # IDEs
@@ -63,6 +65,10 @@ functions/.runtimeconfig.json
 functions/firebase-debug.log
 functions/firestore-debug.log
 functions/ui-debug.log
+
+# React admin web app
+admin_web/node_modules/
+admin_web/dist/
 
 # Logs and OS files
 *.log
