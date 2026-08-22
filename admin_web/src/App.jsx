@@ -271,9 +271,32 @@ function LoginScreen({ setToast, toast }) {
 
   return (
     <div className="login-screen">
+      <section className="login-hero-panel" aria-label="BloodLK admin overview">
+        <div className="login-brand-row">
+          <img src="/blood-lk-logo.png" alt="BloodLK" />
+          <div>
+            <strong>BloodLK</strong>
+            <span>Admin Operations</span>
+          </div>
+        </div>
+        <div className="login-copy">
+          <span className="eyebrow">Secure dashboard</span>
+          <h1>Coordinate urgent blood requests with confidence.</h1>
+          <p>Manage donors, centers, alerts, and donation records from one protected Firebase admin panel.</p>
+        </div>
+        <div className="login-feature-grid">
+          <span><ShieldCheck size={18} /> Role protected</span>
+          <span><Bell size={18} /> Push alerts</span>
+          <span><UsersRound size={18} /> Donor records</span>
+          <span><Building2 size={18} /> Center data</span>
+        </div>
+      </section>
       <form className="login-card" onSubmit={submit}>
-        <img src="/blood-lk-logo.png" alt="BloodLK" />
-        <h1>Admin Panel</h1>
+        <div className="login-card-header">
+          <img src="/blood-lk-logo.png" alt="BloodLK" />
+          <span>Admin access</span>
+        </div>
+        <h1>Welcome Back</h1>
         <p>Sign in with an account that has the Firestore admin role.</p>
         <label>
           Email
@@ -297,6 +320,7 @@ function LoginScreen({ setToast, toast }) {
           <ShieldCheck size={18} />
           {loading ? 'Checking...' : 'Sign In'}
         </button>
+        <small className="login-note">Only `users/uid` records with role `admin` can open this panel.</small>
       </form>
       {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
     </div>
