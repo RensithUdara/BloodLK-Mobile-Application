@@ -26,7 +26,9 @@ import {
   EyeOff,
   HelpCircle,
   LayoutDashboard,
+  LockKeyhole,
   LogOut,
+  Mail,
   MapPin,
   Megaphone,
   Phone,
@@ -290,21 +292,46 @@ function LoginScreen({ setToast, toast }) {
           <span><UsersRound size={18} /> Donor records</span>
           <span><Building2 size={18} /> Center data</span>
         </div>
+        <div className="login-preview-card">
+          <div className="preview-header">
+            <span><Activity size={18} /></span>
+            <div>
+              <strong>Live operations</strong>
+              <small>Today overview</small>
+            </div>
+          </div>
+          <div className="preview-grid">
+            <span><b>128</b> Requests</span>
+            <span><b>842</b> Donors</span>
+            <span><b>45</b> Centers</span>
+          </div>
+          <div className="preview-alert">
+            <Droplet size={18} />
+            Urgent A+ request ready for review
+          </div>
+        </div>
       </section>
       <form className="login-card" onSubmit={submit}>
         <div className="login-card-header">
           <img src="/blood-lk-logo.png" alt="BloodLK" />
           <span>Secure access</span>
         </div>
-        <h1>Welcome Back</h1>
-        <p>Sign in with your approved administrator account.</p>
+        <div className="login-title-block">
+          <span><ShieldCheck size={18} /> Protected admin portal</span>
+          <h1>Welcome Back</h1>
+          <p>Sign in with your approved administrator account.</p>
+        </div>
         <label>
           Email
-          <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
+          <span className="input-shell">
+            <Mail size={18} />
+            <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
+          </span>
         </label>
         <label>
           Password
-          <span className="password-box">
+          <span className="password-box input-shell">
+            <LockKeyhole size={18} />
             <input
               value={password}
               onChange={(event) => setPassword(event.target.value)}
