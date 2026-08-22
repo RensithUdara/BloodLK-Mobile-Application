@@ -282,7 +282,7 @@ function LoginScreen({ setToast, toast }) {
         <div className="login-copy">
           <span className="eyebrow">Secure dashboard</span>
           <h1>Coordinate urgent blood requests with confidence.</h1>
-          <p>Manage donors, centers, alerts, and donation records from one protected Firebase admin panel.</p>
+          <p>Manage donors, centers, alerts, and donation records from one protected admin workspace.</p>
         </div>
         <div className="login-feature-grid">
           <span><ShieldCheck size={18} /> Role protected</span>
@@ -294,10 +294,10 @@ function LoginScreen({ setToast, toast }) {
       <form className="login-card" onSubmit={submit}>
         <div className="login-card-header">
           <img src="/blood-lk-logo.png" alt="BloodLK" />
-          <span>Admin access</span>
+          <span>Secure access</span>
         </div>
         <h1>Welcome Back</h1>
-        <p>Sign in with an account that has the Firestore admin role.</p>
+        <p>Sign in with your approved administrator account.</p>
         <label>
           Email
           <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
@@ -320,7 +320,7 @@ function LoginScreen({ setToast, toast }) {
           <ShieldCheck size={18} />
           {loading ? 'Checking...' : 'Sign In'}
         </button>
-        <small className="login-note">Only `users/uid` records with role `admin` can open this panel.</small>
+        <small className="login-note">Only approved administrators can open this panel.</small>
       </form>
       {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
     </div>
@@ -620,7 +620,7 @@ function GroupAlerts({ setToast }) {
 
   return (
     <PageCard title="Group Alerts" icon={Bell}>
-      <p className="muted-text">Choose one or more blood groups, confirm, and send urgent Firebase push notifications.</p>
+      <p className="muted-text">Choose one or more blood groups, confirm, and send urgent push alerts.</p>
       <div className="chip-grid">
         {bloodGroups.map((group) => (
           <button key={group} className={selected.includes(group) ? 'chip selected' : 'chip'} onClick={() => toggle(group)}>
@@ -806,7 +806,7 @@ function SettingsView({ user, setToast }) {
         <SettingRow icon={Megaphone} title="Web FCM token" value="Requires VITE_FIREBASE_VAPID_KEY">
           <button className="soft-button" onClick={copyToken}>Copy Token</button>
         </SettingRow>
-        <SettingRow icon={Building2} title="Firestore collections" value="donors, users, emergency_request, donation_center, donorSettings" />
+        <SettingRow icon={Building2} title="System data" value="Donors, requests, centers, settings, and notification records" />
       </div>
     </PageCard>
   );
@@ -864,7 +864,7 @@ function FormCard({ title, icon: Icon, onSubmit, children }) {
 }
 
 function DataState({ source, empty, children }) {
-  if (source.loading) return <EmptyState icon={RefreshCw} title="Loading..." message="Getting live Firebase data." />;
+  if (source.loading) return <EmptyState icon={RefreshCw} title="Loading..." message="Getting the latest records." />;
   if (source.error) return <EmptyState icon={AlertCircle} title="Unable to load" message={source.error} />;
   if (source.items.length === 0) return <EmptyState icon={AlertCircle} title={empty} message="New records will appear here automatically." />;
   return children;
