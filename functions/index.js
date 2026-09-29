@@ -1,11 +1,19 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { defineSecret, defineString } = require("firebase-functions/params");
 const admin = require("firebase-admin");
+const crypto = require("crypto");
 
 admin.initializeApp();
 
 const RECOVERY_DAYS = 150;
+const OTP_TTL_MINUTES = 5;
+const OTP_RESEND_SECONDS = 45;
+const OTP_MAX_ATTEMPTS = 5;
+const TEXTLK_SEND_URL = "https://app.text.lk/api/v3/sms/send";
+const textlkApiKey = defineSecret("TEXTLK_API_KEY");
+const textlkSenderId = defineString("TEXTLK_SENDER_ID", { default: "BloodLK" });
 
 function lastEligibleDate() {
   const date = new Date();
@@ -23,6 +31,91 @@ function isEligibleDonor(donor) {
 
 function cleanToken(value) {
   return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+}
+
+function requireSignedIn(request) {
+  const uid = request.auth && request.auth.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "Please sign in first.");
+  }
+  return uid;
+}
+
+function normalizeSriLankanMobile(value) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  let digits = raw.replace(/[^\d]/g, "");
+
+  if (digits.startsWith("0094")) digits = digits.slice(2);
+  if (digits.startsWith("0")) digits = `94${digits.slice(1)}`;
+  if (digits.length === 9 && digits.startsWith("7")) digits = `94${digits}`;
+
+  if (!/^947\d{8}$/.test(digits)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Enter a valid Sri Lankan mobile number, for example 0771234567.",
+    );
+  }
+
+  return digits;
+}
+
+function createOtp() {
+  return crypto.randomInt(1000, 10000).toString();
+}
+
+function hashOtp(code, salt) {
+  return crypto.createHash("sha256").update(`${salt}:${code}`).digest("hex");
+}
+
+function readTextlkConfig() {
+  const apiKey = textlkApiKey.value() || process.env.TEXTLK_API_KEY;
+  const senderId = textlkSenderId.value() || process.env.TEXTLK_SENDER_ID;
+
+  if (!apiKey) {
+    throw new HttpsError(
+      "failed-precondition",
+      "TextLK API key is not configured.",
+    );
+  }
+
+  if (!senderId) {
+    throw new HttpsError(
+      "failed-precondition",
+      "TextLK sender ID is not configured.",
+    );
+  }
+
+  return { apiKey, senderId };
+}
+
+async function sendTextlkSms({ recipient, message }) {
+  const { apiKey, senderId } = readTextlkConfig();
+  const response = await fetch(TEXTLK_SEND_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      recipient,
+      sender_id: senderId,
+      type: "plain",
+      message,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    console.error("TextLK SMS send failed", {
+      status: response.status,
+      body: body.slice(0, 500),
+    });
+    throw new HttpsError(
+      "unavailable",
+      "Could not send the OTP SMS. Please try again.",
+    );
+  }
 }
 
 async function getEnabledSettings(uid) {
@@ -252,4 +345,97 @@ exports.sendGroupNotification = onCall(async (request) => {
   }
 
   return { success: true, count: successCount };
+});
+
+exports.sendDonorOtp = onCall({ secrets: [textlkApiKey] }, async (request) => {
+  const uid = requireSignedIn(request);
+  const phone = normalizeSriLankanMobile(request.data && request.data.phone);
+  const db = admin.firestore();
+  const ref = db.collection("donorOtpVerifications").doc(uid);
+  const snapshot = await ref.get();
+  const existing = snapshot.data();
+
+  if (existing && existing.lastSentAt) {
+    const lastSentAt = existing.lastSentAt.toDate
+      ? existing.lastSentAt.toDate()
+      : new Date(existing.lastSentAt);
+    const elapsedSeconds = (Date.now() - lastSentAt.getTime()) / 1000;
+    if (elapsedSeconds < OTP_RESEND_SECONDS) {
+      throw new HttpsError(
+        "resource-exhausted",
+        `Please wait ${Math.ceil(OTP_RESEND_SECONDS - elapsedSeconds)} seconds before requesting another OTP.`,
+      );
+    }
+  }
+
+  const code = createOtp();
+  const salt = crypto.randomBytes(16).toString("hex");
+  const now = admin.firestore.Timestamp.now();
+  const expiresAt = admin.firestore.Timestamp.fromMillis(
+    Date.now() + OTP_TTL_MINUTES * 60 * 1000,
+  );
+
+  await sendTextlkSms({
+    recipient: phone,
+    message: `Your BloodLK verification OTP is ${code}. It expires in ${OTP_TTL_MINUTES} minutes.`,
+  });
+
+  await ref.set({
+    phone,
+    codeHash: hashOtp(code, salt),
+    salt,
+    attempts: 0,
+    verified: false,
+    createdAt: now,
+    lastSentAt: now,
+    expiresAt,
+  });
+
+  return { success: true, expiresInSeconds: OTP_TTL_MINUTES * 60 };
+});
+
+exports.verifyDonorOtp = onCall(async (request) => {
+  const uid = requireSignedIn(request);
+  const code = typeof request.data?.code === "string" ? request.data.code.trim() : "";
+
+  if (!/^\d{4}$/.test(code)) {
+    throw new HttpsError("invalid-argument", "Enter the 4-digit OTP.");
+  }
+
+  const ref = admin.firestore().collection("donorOtpVerifications").doc(uid);
+  const snapshot = await ref.get();
+  const verification = snapshot.data();
+
+  if (!verification) {
+    throw new HttpsError("failed-precondition", "Please request an OTP first.");
+  }
+
+  const expiresAt = verification.expiresAt && verification.expiresAt.toDate
+    ? verification.expiresAt.toDate()
+    : new Date(verification.expiresAt);
+
+  if (Date.now() > expiresAt.getTime()) {
+    throw new HttpsError("deadline-exceeded", "This OTP has expired. Please request a new one.");
+  }
+
+  const attempts = Number(verification.attempts || 0);
+  if (attempts >= OTP_MAX_ATTEMPTS) {
+    throw new HttpsError("resource-exhausted", "Too many OTP attempts. Please request a new OTP.");
+  }
+
+  const codeHash = hashOtp(code, verification.salt);
+  if (codeHash !== verification.codeHash) {
+    await ref.set({ attempts: attempts + 1 }, { merge: true });
+    return { verified: false };
+  }
+
+  await ref.set(
+    {
+      verified: true,
+      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
+
+  return { verified: true };
 });
