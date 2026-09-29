@@ -1,8 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../data/models/donor.dart';
 import '../data/repositories/donor_repository.dart';
+import '../services/notification_service.dart';
 
 class DonorRegistrationViewModel extends ChangeNotifier {
   DonorRegistrationViewModel({DonorRepository? donorRepository})
@@ -83,7 +83,7 @@ class DonorRegistrationViewModel extends ChangeNotifier {
   }
 
   Future<void> registerDonor() async {
-    final token = await FirebaseMessaging.instance.getToken();
+    final token = await NotificationService.tryGetToken();
     final donationDate = neverDonated || lastDonationDate == null
         ? DateTime.now().subtract(const Duration(days: 3650))
         : lastDonationDate!;
