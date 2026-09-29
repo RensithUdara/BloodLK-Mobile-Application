@@ -671,69 +671,84 @@ class _OtpDigitFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boxSize = compact ? 42.0 : 52.0;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(controllers.length, (index) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: compact ? 3 : 5),
-          child: Focus(
-            onKeyEvent: (node, event) {
-              onKeyEvent(event, index);
-              return KeyEventResult.ignored;
-            },
-            child: SizedBox(
-              width: boxSize,
-              height: boxSize,
-              child: TextField(
-                controller: controllers[index],
-                focusNode: focusNodes[index],
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                textInputAction: index == controllers.length - 1
-                    ? TextInputAction.done
-                    : TextInputAction.next,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(1),
-                ],
-                style: TextStyle(
-                  color: const Color(0xFF13282B),
-                  fontSize: compact ? 18 : 22,
-                  fontWeight: FontWeight.w900,
-                ),
-                decoration: InputDecoration(
-                  counterText: '',
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: EdgeInsets.zero,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: AppColors.bloodRed,
-                      width: 1.2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: AppColors.bloodRed,
-                      width: 1.8,
-                    ),
-                  ),
-                ),
-                onChanged: (value) => onChanged(value, index),
-                onSubmitted: (_) {
-                  if (index == controllers.length - 1) {
-                    FocusScope.of(context).unfocus();
-                  }
-                },
-              ),
-            ),
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        final gap = maxWidth < 320 ? 4.0 : (compact ? 6.0 : 8.0);
+        final totalGap = gap * (controllers.length - 1);
+        final boxSize = math.min(
+          compact ? 44.0 : 52.0,
+          (maxWidth - totalGap) / controllers.length,
         );
-      }),
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(controllers.length, (index) {
+            return Padding(
+              padding: EdgeInsets.only(
+                right: index == controllers.length - 1 ? 0 : gap,
+              ),
+              child: Focus(
+                onKeyEvent: (node, event) {
+                  onKeyEvent(event, index);
+                  return KeyEventResult.ignored;
+                },
+                child: SizedBox(
+                  width: boxSize,
+                  height: boxSize,
+                  child: TextField(
+                    controller: controllers[index],
+                    focusNode: focusNodes[index],
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    textInputAction: index == controllers.length - 1
+                        ? TextInputAction.done
+                        : TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(1),
+                    ],
+                    style: TextStyle(
+                      color: const Color(0xFF13282B),
+                      fontSize: compact ? 17 : 20,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.zero,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: AppColors.bloodRed,
+                          width: 1.2,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: AppColors.bloodRed,
+                          width: 1.8,
+                        ),
+                      ),
+                    ),
+                    onChanged: (value) => onChanged(value, index),
+                    onSubmitted: (_) {
+                      if (index == controllers.length - 1) {
+                        FocusScope.of(context).unfocus();
+                      }
+                    },
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 }
