@@ -2,6 +2,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationRepository {
   NotificationRepository({
@@ -41,7 +42,7 @@ class NotificationRepository {
     final donorDoc = _currentDonorDoc;
     if (donorDoc == null) return null;
 
-    final token = await _messaging.getToken();
+    final token = await _tryGetToken();
     if (token == null || token.trim().isEmpty) return null;
 
     await donorDoc.set(
@@ -53,6 +54,16 @@ class NotificationRepository {
     );
 
     return token;
+  }
+
+  Future<String?> _tryGetToken() async {
+    try {
+      return await _messaging.getToken();
+    } catch (error, stackTrace) {
+      debugPrint('Unable to sync FCM token: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      return null;
+    }
   }
 
   Future<void> saveSettings({
