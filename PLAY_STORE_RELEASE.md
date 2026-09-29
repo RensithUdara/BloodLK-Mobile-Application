@@ -122,6 +122,17 @@ Re-run:
 flutter build appbundle --release
 ```
 
+## TextLK OTP Requirement
+
+Donor registration now sends OTP messages through the Firebase callable function `sendDonorOtp`. Configure the TextLK credentials before deploying functions:
+
+```bash
+firebase functions:secrets:set TEXTLK_API_KEY
+firebase deploy --only functions
+```
+
+The sender ID defaults to `BloodLK`. If your approved TextLK sender ID is different, set `TEXTLK_SENDER_ID` in the Firebase Functions environment before deploying.
+
 ## Release Checklist
 
 1. Upload `build/app/outputs/bundle/release/app-release.aab` to Play Console.
