@@ -8,12 +8,15 @@ const crypto = require("crypto");
 admin.initializeApp();
 
 const RECOVERY_DAYS = 150;
-const OTP_TTL_MINUTES = 5;
+const DEFAULT_OTP_LENGTH = 6;
+const DEFAULT_OTP_TTL_MINUTES = 10;
 const OTP_RESEND_SECONDS = 45;
-const OTP_MAX_ATTEMPTS = 5;
-const TEXTLK_SEND_URL = "https://app.text.lk/api/v3/sms/send";
-const textlkApiKey = defineSecret("TEXTLK_API_KEY");
-const textlkSenderId = defineString("TEXTLK_SENDER_ID", { default: "BloodLK" });
+const DEFAULT_OTP_MAX_ATTEMPTS = 3;
+const DEFAULT_TEXTLK_SEND_URL = "https://app.text.lk/api/v3/sms/send";
+const DEFAULT_SMS_TEMPLATE =
+  "Your BloodLK verification code is: {OTP}. Valid for {MINUTES} minutes. Do not share this code with anyone.";
+const textlkApiToken = defineSecret("TEXTLK_API_TOKEN");
+const textlkSenderId = defineString("TEXTLK_SENDER_ID", { default: "TextLKDemo" });
 
 function lastEligibleDate() {
   const date = new Date();
@@ -59,8 +62,15 @@ function normalizeSriLankanMobile(value) {
   return digits;
 }
 
-function createOtp() {
-  return crypto.randomInt(1000, 10000).toString();
+function envInt(name, fallback) {
+  const value = Number.parseInt(process.env[name] || "", 10);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function createOtp(length) {
+  const min = 10 ** (length - 1);
+  const max = 10 ** length;
+  return crypto.randomInt(min, max).toString();
 }
 
 function hashOtp(code, salt) {
@@ -68,13 +78,17 @@ function hashOtp(code, salt) {
 }
 
 function readTextlkConfig() {
-  const apiKey = textlkApiKey.value() || process.env.TEXTLK_API_KEY;
-  const senderId = textlkSenderId.value() || process.env.TEXTLK_SENDER_ID;
+  const apiToken =
+    process.env.TEXTLK_API_TOKEN ||
+    process.env.TEXTLK_API_KEY ||
+    textlkApiToken.value();
+  const apiUrl = process.env.TEXTLK_API_URL || DEFAULT_TEXTLK_SEND_URL;
+  const senderId = process.env.TEXTLK_SENDER_ID || textlkSenderId.value();
 
-  if (!apiKey) {
+  if (!apiToken) {
     throw new HttpsError(
       "failed-precondition",
-      "TextLK API key is not configured.",
+      "TextLK API token is not configured.",
     );
   }
 
@@ -85,15 +99,15 @@ function readTextlkConfig() {
     );
   }
 
-  return { apiKey, senderId };
+  return { apiToken, apiUrl, senderId };
 }
 
 async function sendTextlkSms({ recipient, message }) {
-  const { apiKey, senderId } = readTextlkConfig();
-  const response = await fetch(TEXTLK_SEND_URL, {
+  const { apiToken, apiUrl, senderId } = readTextlkConfig();
+  const response = await fetch(apiUrl, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json",
       Accept: "application/json",
     },
@@ -347,7 +361,7 @@ exports.sendGroupNotification = onCall(async (request) => {
   return { success: true, count: successCount };
 });
 
-exports.sendDonorOtp = onCall({ secrets: [textlkApiKey] }, async (request) => {
+exports.sendDonorOtp = onCall({ secrets: [textlkApiToken] }, async (request) => {
   const uid = requireSignedIn(request);
   const phone = normalizeSriLankanMobile(request.data && request.data.phone);
   const db = admin.firestore();
@@ -368,16 +382,22 @@ exports.sendDonorOtp = onCall({ secrets: [textlkApiKey] }, async (request) => {
     }
   }
 
-  const code = createOtp();
+  const otpLength = envInt("OTP_LENGTH", DEFAULT_OTP_LENGTH);
+  const otpTtlMinutes = envInt("OTP_EXPIRY_MINUTES", DEFAULT_OTP_TTL_MINUTES);
+  const code = createOtp(otpLength);
   const salt = crypto.randomBytes(16).toString("hex");
   const now = admin.firestore.Timestamp.now();
   const expiresAt = admin.firestore.Timestamp.fromMillis(
-    Date.now() + OTP_TTL_MINUTES * 60 * 1000,
+    Date.now() + otpTtlMinutes * 60 * 1000,
   );
+  const smsTemplate = process.env.SMS_TEMPLATE || DEFAULT_SMS_TEMPLATE;
+  const message = smsTemplate
+    .replaceAll("{OTP}", code)
+    .replaceAll("{MINUTES}", otpTtlMinutes.toString());
 
   await sendTextlkSms({
     recipient: phone,
-    message: `Your BloodLK verification OTP is ${code}. It expires in ${OTP_TTL_MINUTES} minutes.`,
+    message,
   });
 
   await ref.set({
@@ -391,15 +411,17 @@ exports.sendDonorOtp = onCall({ secrets: [textlkApiKey] }, async (request) => {
     expiresAt,
   });
 
-  return { success: true, expiresInSeconds: OTP_TTL_MINUTES * 60 };
+  return { success: true, expiresInSeconds: otpTtlMinutes * 60 };
 });
 
 exports.verifyDonorOtp = onCall(async (request) => {
   const uid = requireSignedIn(request);
   const code = typeof request.data?.code === "string" ? request.data.code.trim() : "";
+  const otpLength = envInt("OTP_LENGTH", DEFAULT_OTP_LENGTH);
+  const maxAttempts = envInt("OTP_MAX_ATTEMPTS", DEFAULT_OTP_MAX_ATTEMPTS);
 
-  if (!/^\d{4}$/.test(code)) {
-    throw new HttpsError("invalid-argument", "Enter the 4-digit OTP.");
+  if (!new RegExp(`^\\d{${otpLength}}$`).test(code)) {
+    throw new HttpsError("invalid-argument", `Enter the ${otpLength}-digit OTP.`);
   }
 
   const ref = admin.firestore().collection("donorOtpVerifications").doc(uid);
@@ -419,7 +441,7 @@ exports.verifyDonorOtp = onCall(async (request) => {
   }
 
   const attempts = Number(verification.attempts || 0);
-  if (attempts >= OTP_MAX_ATTEMPTS) {
+  if (attempts >= maxAttempts) {
     throw new HttpsError("resource-exhausted", "Too many OTP attempts. Please request a new OTP.");
   }
 
