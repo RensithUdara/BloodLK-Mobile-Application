@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../core/config/firebase_options.dart';
 
@@ -58,9 +59,19 @@ class NotificationService {
   }
 
   static Future<void> _syncToken() async {
-    final token = await FirebaseMessaging.instance.getToken();
+    final token = await tryGetToken();
     if (token == null || token.trim().isEmpty) return;
     await _saveToken(token);
+  }
+
+  static Future<String?> tryGetToken() async {
+    try {
+      return await FirebaseMessaging.instance.getToken();
+    } catch (error, stackTrace) {
+      debugPrint('Unable to get FCM token: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      return null;
+    }
   }
 
   static Future<void> _saveToken(String token) async {
