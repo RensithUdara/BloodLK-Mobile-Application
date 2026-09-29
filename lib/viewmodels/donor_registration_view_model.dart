@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../data/models/donor.dart';
@@ -20,7 +20,8 @@ class DonorRegistrationViewModel extends ChangeNotifier {
   String selectedBloodGroup = 'A+';
   DateTime? lastDonationDate;
   bool neverDonated = true;
-  String generatedOtp = '';
+  bool isSendingOtp = false;
+  bool isVerifyingOtp = false;
 
   int? daysUntilEligible() {
     if (neverDonated || lastDonationDate == null) return null;
@@ -48,13 +49,38 @@ class DonorRegistrationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String generateOtp() {
-    generatedOtp = (1000 + Random().nextInt(9000)).toString();
+  Future<void> sendOtp() async {
+    isSendingOtp = true;
     notifyListeners();
-    return generatedOtp;
+
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('sendDonorOtp');
+      await callable.call(<String, dynamic>{
+        'phone': phoneController.text.trim(),
+      });
+    } finally {
+      isSendingOtp = false;
+      notifyListeners();
+    }
   }
 
-  bool isOtpValid() => otpController.text.trim() == generatedOtp;
+  Future<bool> verifyOtp() async {
+    isVerifyingOtp = true;
+    notifyListeners();
+
+    try {
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('verifyDonorOtp');
+      final response = await callable.call(<String, dynamic>{
+        'code': otpController.text.trim(),
+      });
+      final data = response.data;
+      return data is Map && data['verified'] == true;
+    } finally {
+      isVerifyingOtp = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> registerDonor() async {
     final token = await FirebaseMessaging.instance.getToken();
@@ -87,7 +113,8 @@ class DonorRegistrationViewModel extends ChangeNotifier {
     otpController.clear();
     lastDonationDate = null;
     neverDonated = true;
-    generatedOtp = '';
+    isSendingOtp = false;
+    isVerifyingOtp = false;
     notifyListeners();
   }
 
