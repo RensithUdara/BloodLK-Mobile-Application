@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/app_routes.dart';
 import '../../core/constants/app_constants.dart';
+import '../../data/repositories/auth_repository.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -17,6 +19,7 @@ class _SplashViewState extends State<SplashView>
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
   Timer? _navigationTimer;
+  final _authRepository = AuthRepository();
 
   @override
   void initState() {
@@ -32,11 +35,32 @@ class _SplashViewState extends State<SplashView>
     );
 
     _controller.forward();
+    _navigateAfterSplash();
+  }
+
+  Future<void> _navigateAfterSplash() async {
+    final destination = await _nextRoute();
     _navigationTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.login);
-      }
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, destination);
     });
+  }
+
+  Future<String> _nextRoute() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return AppRoutes.login;
+
+    try {
+      final role = await _authRepository.userRole(user.uid);
+      if (role == 'admin') return AppRoutes.admin;
+
+      final hasProfile = await _authRepository.donorProfileExists(user.uid);
+      if (hasProfile) return AppRoutes.home;
+
+      return AppRoutes.donorRegistration;
+    } catch (_) {
+      return AppRoutes.home;
+    }
   }
 
   @override
