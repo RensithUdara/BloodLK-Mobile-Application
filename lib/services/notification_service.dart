@@ -39,8 +39,8 @@ class NotificationService {
       );
     });
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-      _saveToken(token);
+    FirebaseMessaging.instance.onTokenRefresh.listen((token) async {
+      await _trySaveToken(token);
     });
   }
 
@@ -61,7 +61,7 @@ class NotificationService {
   static Future<void> _syncToken() async {
     final token = await tryGetToken();
     if (token == null || token.trim().isEmpty) return;
-    await _saveToken(token);
+    await _trySaveToken(token);
   }
 
   static Future<String?> tryGetToken() async {
@@ -85,5 +85,14 @@ class NotificationService {
       },
       SetOptions(merge: true),
     );
+  }
+
+  static Future<void> _trySaveToken(String token) async {
+    try {
+      await _saveToken(token);
+    } catch (error, stackTrace) {
+      debugPrint('Unable to save FCM token: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
   }
 }
