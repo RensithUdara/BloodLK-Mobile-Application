@@ -1,4 +1,4 @@
-package com.bloodlk.app
+package com.rensithudara.bloodlk
 
 import io.flutter.embedding.android.FlutterActivity
 
