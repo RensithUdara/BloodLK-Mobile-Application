@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -37,8 +38,14 @@ class DonorRegistrationView extends StatelessWidget {
       return;
     }
 
-    viewModel.generateOtp();
-    if (!context.mounted) return;
+    try {
+      await viewModel.sendOtp();
+      if (!context.mounted) return;
+    } catch (error) {
+      if (!context.mounted) return;
+      _showOtpError(context, error);
+      return;
+    }
 
     await showDialog<void>(
       context: context,
@@ -53,7 +60,16 @@ class DonorRegistrationView extends StatelessWidget {
   Future<void> _verifyOtpAndRegister(BuildContext context) async {
     final viewModel = context.read<DonorRegistrationViewModel>();
 
-    if (!viewModel.isOtpValid()) {
+    bool isVerified;
+    try {
+      isVerified = await viewModel.verifyOtp();
+    } catch (error) {
+      if (!context.mounted) return;
+      _showOtpError(context, error);
+      return;
+    }
+
+    if (!isVerified) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Invalid OTP'),
@@ -96,6 +112,22 @@ class DonorRegistrationView extends StatelessWidget {
         ),
       );
     }
+  }
+
+  void _showOtpError(BuildContext context, Object error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_readableOtpError(error)),
+        backgroundColor: AppColors.bloodRed,
+      ),
+    );
+  }
+
+  String _readableOtpError(Object error) {
+    if (error is FirebaseFunctionsException) {
+      return error.message ?? 'OTP verification failed. Please try again.';
+    }
+    return error.toString().replaceFirst('Exception: ', '');
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -207,7 +239,10 @@ class DonorRegistrationView extends StatelessWidget {
                         SizedBox(height: compact ? 12 : 18),
                         _RegisterButton(
                           compact: compact,
-                          onTap: () => _startRegistration(context, formKey),
+                          isLoading: viewModel.isSendingOtp,
+                          onTap: viewModel.isSendingOtp
+                              ? null
+                              : () => _startRegistration(context, formKey),
                         ),
                         SizedBox(height: compact ? 10 : 14),
                         const _SafetyNote(),
@@ -304,21 +339,24 @@ class _OtpVerificationDialog extends StatefulWidget {
 }
 
 class _OtpVerificationDialogState extends State<_OtpVerificationDialog> {
+  static const int _otpLength = 6;
   static const int _resendSeconds = 45;
 
   late final List<TextEditingController> _digitControllers;
   late final List<FocusNode> _focusNodes;
   Timer? _timer;
   int _secondsLeft = _resendSeconds;
+  bool _isResending = false;
+  bool _isVerifying = false;
 
   @override
   void initState() {
     super.initState();
     _digitControllers = List.generate(
-      4,
+      _otpLength,
       (index) => TextEditingController(),
     );
-    _focusNodes = List.generate(4, (index) => FocusNode());
+    _focusNodes = List.generate(_otpLength, (index) => FocusNode());
     _startTimer();
   }
 
@@ -377,17 +415,49 @@ class _OtpVerificationDialogState extends State<_OtpVerificationDialog> {
         _digitControllers.map((controller) => controller.text).join();
   }
 
-  void _resendOtp() {
+  Future<void> _resendOtp() async {
     if (_secondsLeft > 0) return;
 
-    widget.viewModel.generateOtp();
+    setState(() => _isResending = true);
+    try {
+      await widget.viewModel.sendOtp();
+      if (!mounted) return;
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error is FirebaseFunctionsException
+                ? error.message ?? 'Could not resend OTP. Please try again.'
+                : error.toString().replaceFirst('Exception: ', ''),
+          ),
+          backgroundColor: AppColors.bloodRed,
+        ),
+      );
+      setState(() => _isResending = false);
+      return;
+    }
+
     for (final controller in _digitControllers) {
       controller.clear();
     }
     widget.viewModel.otpController.clear();
     _focusNodes.first.requestFocus();
-    setState(() => _secondsLeft = _resendSeconds);
+    setState(() {
+      _secondsLeft = _resendSeconds;
+      _isResending = false;
+    });
     _startTimer();
+  }
+
+  Future<void> _verifyOtp() async {
+    if (_isVerifying) return;
+
+    setState(() => _isVerifying = true);
+    await widget.onVerify();
+    if (mounted) {
+      setState(() => _isVerifying = false);
+    }
   }
 
   String get _countdown {
@@ -454,7 +524,7 @@ class _OtpVerificationDialogState extends State<_OtpVerificationDialog> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "We've sent a 4-digit OTP to your\nregistered phone number",
+                      "We've sent a 6-digit OTP to your\nregistered phone number",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: const Color(0xFF68707A),
@@ -463,8 +533,6 @@ class _OtpVerificationDialogState extends State<_OtpVerificationDialog> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: compact ? 12 : 14),
-                    _GeneratedOtpBadge(otp: widget.viewModel.generatedOtp),
                     SizedBox(height: compact ? 16 : 20),
                     _OtpDigitFields(
                       controllers: _digitControllers,
@@ -477,13 +545,15 @@ class _OtpVerificationDialogState extends State<_OtpVerificationDialog> {
                     _ResendTimerRow(
                       secondsLeft: _secondsLeft,
                       countdown: _countdown,
+                      isLoading: _isResending,
                       onResend: _resendOtp,
                     ),
                     SizedBox(height: compact ? 18 : 22),
                     _OtpActionButtons(
                       compact: compact,
+                      isLoading: _isVerifying,
                       onCancel: () => Navigator.pop(context),
-                      onVerify: widget.onVerify,
+                      onVerify: _verifyOtp,
                     ),
                   ],
                 ),
@@ -584,48 +654,6 @@ class _OtpDotsPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class _GeneratedOtpBadge extends StatelessWidget {
-  const _GeneratedOtpBadge({required this.otp});
-
-  final String otp;
-
-  @override
-  Widget build(BuildContext context) {
-    final compact = MediaQuery.sizeOf(context).width < 380;
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 18 : 22,
-        vertical: compact ? 9 : 11,
-      ),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF0F2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(
-            color: const Color(0xFF596067),
-            fontSize: compact ? 18 : 21,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.8,
-          ),
-          children: [
-            const TextSpan(text: 'OTP: '),
-            TextSpan(
-              text: otp,
-              style: const TextStyle(
-                color: AppColors.bloodRed,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _OtpDigitFields extends StatelessWidget {
   const _OtpDigitFields({
     required this.controllers,
@@ -714,20 +742,28 @@ class _ResendTimerRow extends StatelessWidget {
   const _ResendTimerRow({
     required this.secondsLeft,
     required this.countdown,
+    required this.isLoading,
     required this.onResend,
   });
 
   final int secondsLeft;
   final String countdown;
-  final VoidCallback onResend;
+  final bool isLoading;
+  final Future<void> Function() onResend;
 
   @override
   Widget build(BuildContext context) {
     if (secondsLeft == 0) {
       return TextButton.icon(
-        onPressed: onResend,
-        icon: const Icon(Icons.refresh_rounded, size: 19),
-        label: const Text('Resend OTP'),
+        onPressed: isLoading ? null : onResend,
+        icon: isLoading
+            ? const SizedBox(
+                width: 17,
+                height: 17,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.refresh_rounded, size: 19),
+        label: Text(isLoading ? 'Sending...' : 'Resend OTP'),
         style: TextButton.styleFrom(
           foregroundColor: AppColors.bloodRed,
           textStyle: const TextStyle(
@@ -771,11 +807,13 @@ class _ResendTimerRow extends StatelessWidget {
 class _OtpActionButtons extends StatelessWidget {
   const _OtpActionButtons({
     required this.compact,
+    required this.isLoading,
     required this.onCancel,
     required this.onVerify,
   });
 
   final bool compact;
+  final bool isLoading;
   final VoidCallback onCancel;
   final Future<void> Function() onVerify;
 
@@ -806,7 +844,7 @@ class _OtpActionButtons extends StatelessWidget {
         Expanded(
           flex: compact ? 15 : 16,
           child: FilledButton(
-            onPressed: onVerify,
+            onPressed: isLoading ? null : onVerify,
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.bloodRed,
               foregroundColor: Colors.white,
@@ -819,22 +857,34 @@ class _OtpActionButtons extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    'Register',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: compact ? 12 : 14),
+            child: isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.2,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'Register',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(fontSize: compact ? 12 : 14),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: compact ? 18 : 21,
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 6),
-                Icon(Icons.arrow_forward_rounded, size: compact ? 18 : 21),
-              ],
-            ),
           ),
         ),
       ],
@@ -1064,10 +1114,15 @@ class _LastDonationDateTile extends StatelessWidget {
 }
 
 class _RegisterButton extends StatelessWidget {
-  const _RegisterButton({required this.compact, required this.onTap});
+  const _RegisterButton({
+    required this.compact,
+    required this.isLoading,
+    required this.onTap,
+  });
 
   final bool compact;
-  final VoidCallback onTap;
+  final bool isLoading;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1097,16 +1152,27 @@ class _RegisterButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Register as a Donor',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: compact ? 14 : 16,
-                    fontWeight: FontWeight.w900,
+                if (isLoading)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.2,
+                    ),
+                  )
+                else ...[
+                  Text(
+                    'Register as a Donor',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: compact ? 14 : 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
+                  const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                ],
               ],
             ),
           ),
