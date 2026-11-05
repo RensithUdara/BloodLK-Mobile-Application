@@ -8,12 +8,15 @@
 build/
 
 # Local environment
+.env
+.env.*
 !.env.example
 !**/.env.example
 *.local
 
 # IDEs
 .idea/
+.vscode/
 *.iml
 
 # Android generated files
@@ -75,5 +78,3 @@ Thumbs.db
 # Local backups / scratch folders
 android_backup/
 my_new_app/
-config.bat
-node_modules
