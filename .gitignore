@@ -78,3 +78,5 @@ Thumbs.db
 # Local backups / scratch folders
 android_backup/
 my_new_app/
+.env.local
+.env.production
